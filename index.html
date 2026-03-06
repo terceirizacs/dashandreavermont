@@ -629,7 +629,7 @@ function renderAll(rows){
   ['base','asc','escola','neuro','tea','outro'].forEach(pk=>{
     if(prodCounts[pk]){
       const pc=rows.length>0?prodCounts[pk]/rows.length*100:0;
-      h1+='<div class="hbar-row"><span class="hbar-lbl">'+prodLabelsMap[pk]+'</span><div class="hbar-track"><div class="hbar-fill" style="width:'+pc.toFixed(0)+'%;background:'+prodColors[pk];overflow:visible;white-space:nowrap;min-width:fit-content;padding-right:12px+'">'+fmtN(prodCounts[pk])+' ('+fmtP(pc)+')</div></div></div>';
+      h1+='<div class="hbar-row"><span class="hbar-lbl">'+prodLabelsMap[pk]+'</span><div class="hbar-track"><div class="hbar-fill" style="width:'+pc.toFixed(0)+'%;background:'+prodColors[pk]+';overflow:visible;white-space:nowrap;min-width:fit-content;padding-right:12px">'+fmtN(prodCounts[pk])+' ('+fmtP(pc)+')</div></div></div>';
     }
   });
   h1+='</div></div>';
@@ -710,7 +710,7 @@ function renderAll(rows){
   ['base','asc','escola','neuro','tea','outro'].forEach(pk=>{
     if(fatByProd[pk]){
       const pct=fatTotal>0?fatByProd[pk]/fatTotal*100:0;
-      h3+='<div class="hbar-row"><span class="hbar-lbl">'+prodLabels2[pk]+'</span><div class="hbar-track"><div class="hbar-fill" style="width:'+Math.round(fatByProd[pk]/mxFat*100)+'%;background:'+prodColors[pk];overflow:visible;white-space:nowrap;min-width:fit-content;padding-right:12px+'">'+fmtR(fatByProd[pk])+' ('+fmtP(pct)+')</div></div></div>';
+      h3+='<div class="hbar-row"><span class="hbar-lbl">'+prodLabels2[pk]+'</span><div class="hbar-track"><div class="hbar-fill" style="width:'+Math.round(fatByProd[pk]/mxFat*100)+'%;background:'+prodColors[pk]+';overflow:visible;white-space:nowrap;min-width:fit-content;padding-right:12px">'+fmtR(fatByProd[pk])+' ('+fmtP(pct)+')</div></div></div>';
     }
   });
   h3+='</div></div></div>';
