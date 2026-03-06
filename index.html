@@ -258,9 +258,8 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="login-box">
       <h2>Dra. Andréa Vermont</h2>
       <p>Customer Success Dashboard</p>
-      <input class="login-input" type="text" id="apiInput" placeholder="API URL (opcional)" onkeydown="if(event.key==='Enter')doLogin()">
       <div style="position:relative"><input class="login-input" type="password" id="pwdInput" placeholder="Senha de acesso" onkeydown="if(event.key==='Enter')doLogin()" style="padding-right:48px;margin-bottom:0"><button type="button" onclick="const i=document.getElementById('pwdInput');const t=i.type==='password'?'text':'password';i.type=t;this.textContent=t==='password'?'👁':'👁‍🗨'" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:20px;cursor:pointer;color:var(--t2);padding:4px">👁</button></div>
-      <div id="pwdError"></div>
+      <div id="pwdError" style="display:none;font-size:13px;color:var(--red);margin:8px 0">Senha incorreta</div>
       <button class="login-btn" onclick="doLogin()">Acessar</button>
     </div>
   </div>
@@ -326,7 +325,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 <script>
 const API_URL='https://script.google.com/macros/s/AKfycbx_MnIkZX07kLJoxPaOTqCdM8TLINpcff6kvjJFlppqhDFvRCx_-i16RIRPzIF1fG1PmA/exec';
-const PWD='Dravermont123';
+const PWD='drandreavermont123';
 const R={PRODUTO:0,STATUS_COMPRA:1,TIPO_ALUNO:2,STATUS_CLUB:3,FUNIL:4,PROG:5,AULAS:6,TOTAL_AULAS:7,ACESSOU:8,QTD_ACESSOS:9,DT_COMPRA:10,ULT_ACESSO:11,VALOR:12,EMAIL:13,DT_APROV:14,PRIM_ACESSO:15};
 
 const fmtN=n=>n.toLocaleString('pt-BR');
@@ -342,7 +341,7 @@ const tipoColors={'BUYER':'var(--green)','IMPORTED':'var(--accent)','GUEST':'var
 
 let RAW_DATA=null;let TODAY_MS=0;
 
-function doLogin(){const u=document.getElementById('apiInput').value;const v=document.getElementById('pwdInput').value;if(v===PWD){document.getElementById('loginScreen').style.display='none';loadData(u||API_URL);}else{document.getElementById('pwdError').style.display='block';}}
+function doLogin(){const v=document.getElementById('pwdInput').value;if(v===PWD){document.getElementById('loginScreen').style.display='none';loadData();}else{document.getElementById('pwdError').style.display='block';}}
 function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('btnDark').classList.toggle('active',!d);document.getElementById('btnLight').classList.toggle('active',d);}
 function switchTab(tab,btn){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));document.getElementById('tab-'+tab).classList.add('active');btn.classList.add('active');}
 
@@ -759,19 +758,17 @@ function renderAll(rows){
   document.getElementById('contentFinanceiro').innerHTML=h3;
 }
 
-function loadData(url){
-  url=url||API_URL;
-  if(!url){
-    alert('Sem URL de API. Usando dados de exemplo (vazio).');
-    RAW_DATA=[];TODAY_MS=new Date().getTime();
-    buildMS('fProduto',[]);
-    buildMS('fStatusCompra',['COMPLETE','APPROVED','REFUNDED','CHARGEBACK','CANCELLED']);
-    buildMS('fStatusClub',['ACTIVE','BLOCKED','BLOCKED_BY_OWNER']);
-    renderAll([]);
+document.addEventListener('click',e=>{if(!e.target.closest('.ms-wrap')){document.querySelectorAll('.ms-dropdown.show').forEach(d=>{d.classList.remove('show');d.previousElementSibling.classList.remove('open');});}});
+
+function loadData(){
+  if(!API_URL){
+    alert('Sem URL de API configurada.');
     return;
   }
-  fetch(url).then(r=>r.json()).then(d=>{
-    RAW_DATA=d||[];TODAY_MS=new Date().getTime();
+  fetch(API_URL).then(r=>r.json()).then(d=>{
+    if(d.error)throw new Error(d.error);
+    RAW_DATA=d.rows||d;TODAY_MS=d.todayMs||new Date().getTime();
+    if(!Array.isArray(RAW_DATA)){RAW_DATA=[];alert('Formato de dados inesperado.');return;}
     const prods=new Set(),statuses=new Set(),statusC=new Set();
     RAW_DATA.forEach(r=>{if(r[R.PRODUTO])prods.add(r[R.PRODUTO]);if(r[R.STATUS_COMPRA])statuses.add(r[R.STATUS_COMPRA]);if(r[R.STATUS_CLUB])statusC.add(r[R.STATUS_CLUB]);});
     buildMS('fProduto',[...prods].sort());
