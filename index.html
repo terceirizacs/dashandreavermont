@@ -426,7 +426,7 @@ function aggregate(rows){
   const a={total:rows.length,funil:{},faixaProg:{},faixaDias:{},tipoAluno:{},progVals:[],acessosMes:[],acessou:0,nuncaAcessou:0,
     ativos:0,bloqueados:0,aulasComp:{base:[],asc:[],escola:[],neuro:[],tea:[],outro:[]},totalAulas:{base:[],asc:[],escola:[],neuro:[],tea:[],outro:[]},
     fin:{compras_v:0,compras_n:0,reembolso_v:0,reembolso_n:0,chargeback_v:0,chargeback_n:0,cancelado_v:0,cancelado_n:0},
-    emails:{sm:new Set(),sv:new Set()},progPorEmail:{},
+    emails:{base:new Set(),asc:new Set(),escola:new Set(),neuro:new Set(),tea:new Set(),outro:new Set()},progPorEmail:{},
     reemb30:{n:0,v:0},reemb60:{n:0,v:0},reemb90:{n:0,v:0},
     produtos:new Set()};
   const d30=TODAY_MS-30*86400000,d60m=TODAY_MS-60*86400000,d90=TODAY_MS-90*86400000;
