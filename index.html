@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dra. Andréa Vermont | CS Dashboard</title>
+<link rel="icon" type="image/jpeg" href="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wgARCASVBJIDASIAAhEBAxEB/8QAGwABAAIDAQEAAAAAAAAAAAAAAAEGBAUHAgP/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAAK1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEEoEgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ1Zk4NM+B0fM5htS9tJtj6oEgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAim3KqlWAQJzMIWze83+p06aPYjbPHolEgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEfDIgo2m6hoSmRlYxEwEwJnyNlvqfJ0vI5nuy4zrNge0CQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQkYlUusHLovNTMKJgAAA9bPVSXTdcxyjpKv789AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARMD4e9Yaeu7rTHiJgAAAA+l5oe/LqAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeSWsrha9BW/kZuHAgAAAAAE7zR3EsYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACIJ86msFnrepg9eUAAAAAAAEm0PtdfP2JAAAAAAAAAifB6n4yfV59BAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAglAMSrlhq2q8EwEAAJEJgPWUYkbLWgAEn3PrfPjsSQAAAAAAAAAIkfHGz4NN8LAK/m5msNp9aj8i6TXNwZaBJBIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABANeZle0urPv8EEwABIiWUYvqyb0pu4tHo1mZ962aPV+vIAPR6uuLZCZiQAAAAAAAAAAAABEjzj5Irmkv/go27ya0Xb7c33pa5wswlAkAAAAAAAAAA">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0e27;--card:#111c44;--border:#1e2749;--shadow:rgba(0,0,0,.4);--t1:#e8e8ff;--t2:#8b8ba8;--t3:#4a4a6a;
+  --accent:#8b7cf7;--a2:#9d88ff;
+  --red:#f87171;--orange:#fb923c;--gold:#fbbf24;--pink:#f472b6;
+  --sky:#06b6d4;--cyan:#0891b2;--teal:#2dd4bf;--green:#34d399;
+  --toggle-bg:#1a2554;--tab-bg:#111c44;--tab-hover:rgba(139,124,247,.08);--track-bg:#1a2554;--donut-hole:#0a0e27;
+  --grad1:rgba(139,124,247,.1);--grad2:rgba(45,212,191,.08);--bh:#1e2749;
+  --prog-clear:#0a0e27;--hbar-bg:#1a2554;
+}
+[data-theme="light"]{
+  --bg:#f8f9ff;--card:#ffffff;--border:#e0e5ff;--shadow:rgba(0,0,0,.08);--t1:#0a0e27;--t2:#5a5a7a;--t3:#7a7a9a;
+  --toggle-bg:#f0f2ff;--tab-bg:#f0f2ff;--tab-hover:rgba(139,124,247,.05);--track-bg:#f0f2ff;--donut-hole:#f8f9ff;
+  --grad1:rgba(139,124,247,.05);--grad2:rgba(45,212,191,.04);--bh:#e0e5ff;
+  --prog-clear:#f8f9ff;--hbar-bg:#f0f2ff;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--t1);font-family:'Outfit',sans-serif;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 25% 15%,var(--grad1) 0%,transparent 50%),radial-gradient(ellipse at 75% 85%,var(--grad2) 0%,transparent 50%);pointer-events:none}
+
+/* Login */
+#loginScreen{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:56px 48px;text-align:center;max-width:420px;width:92%;box-shadow:0 24px 80px var(--shadow)}
+.login-logo{width:80px;height:80px;border-radius:20px;object-fit:cover;margin-bottom:20px}
+.login-box h2{font-size:24px;font-weight:700;margin-bottom:4px}
+.login-box p{font-size:14px;color:var(--t2);margin-bottom:32px}
+.login-input{width:100%;padding:16px 20px;background:var(--bg);border:1px solid var(--border);border-radius:14px;color:var(--t1);font-family:'Outfit';font-size:15px;outline:none;margin-bottom:14px}
+.login-input:focus{border-color:var(--accent)}
+.login-btn{width:100%;padding:16px;background:var(--accent);border:none;border-radius:14px;color:#fff;font-family:'Outfit';font-weight:600;font-size:15px;cursor:pointer}
+#pwdError{font-size:13px;color:var(--red);margin-bottom:12px;display:none}
+
+/* Layout */
+.wrap{padding:0 48px 60px;position:relative;z-index:1}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:36px 0 32px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:16px}
+.hdr-left{display:flex;align-items:center;gap:20px}
+.hdr-logo{width:56px;height:56px;border-radius:16px;object-fit:cover;box-shadow:0 8px 32px var(--shadow)}[data-theme="dark"] .hdr-logo{filter:invert(1) brightness(2)}
+.hdr h1{font-size:32px;font-weight:800;letter-spacing:-.8px}
+.hdr .sub{font-size:15px;color:var(--t2);margin-top:3px}
+.hdr-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.updated-badge{background:rgba(45,212,191,.1);color:var(--teal);padding:10px 20px;border-radius:14px;font-size:13px;font-family:'JetBrains Mono'}
+.theme-toggle{background:var(--toggle-bg);border:1px solid var(--border);border-radius:50px;padding:6px;display:flex;gap:4px;cursor:pointer}
+.theme-btn{width:36px;height:36px;border:none;border-radius:50%;font-size:18px;cursor:pointer;background:transparent;display:flex;align-items:center;justify-content:center;transition:all .3s}
+.theme-btn.active{background:var(--accent);box-shadow:0 2px 12px rgba(139,124,247,.3)}
+
+/* Tabs */
+.tab-nav{display:flex;gap:6px;margin-top:28px;background:var(--tab-bg);border:1px solid var(--border);border-radius:16px;padding:6px;width:fit-content}
+.tab-btn{padding:14px 28px;border:none;border-radius:12px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;color:var(--t2);background:transparent;cursor:pointer;transition:all .25s ease;white-space:nowrap}
+.tab-btn:hover{color:var(--t1);background:var(--tab-hover)}
+.tab-btn.active{color:#fff;background:var(--accent);box-shadow:0 4px 16px rgba(139,124,247,.3)}
+.tab-content{display:none;animation:fadeTab .3s ease}
+.tab-content.active{display:block}
+@keyframes fadeTab{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Filter bar */
+.filter-bar{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px 28px;margin-top:20px;display:flex;flex-direction:column;gap:18px}
+.filter-header{display:flex;align-items:center;justify-content:space-between}
+.filter-title{font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--t2);display:flex;align-items:center;gap:10px}
+.filter-actions{display:flex;gap:10px}
+.filter-clear{background:transparent;border:1px solid var(--border);color:var(--t2);font-family:'Outfit';font-size:13px;font-weight:500;padding:8px 18px;border-radius:10px;cursor:pointer;transition:all .2s}
+.filter-clear:hover{border-color:var(--red);color:var(--red)}
+.filter-apply{background:var(--accent);border:none;color:#fff;font-family:'Outfit';font-size:13px;font-weight:600;padding:8px 22px;border-radius:10px;cursor:pointer;box-shadow:0 2px 12px rgba(139,124,247,.25);transition:all .2s}
+.filter-apply:hover{filter:brightness(1.15)}
+.filter-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.filter-group{display:flex;flex-direction:column;gap:6px}
+.filter-label{font-size:12px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.8px}
+.ms-wrap{position:relative}
+.ms-trigger{background:var(--bg);border:1px solid var(--border);color:var(--t2);font-family:'Outfit';font-size:14px;padding:12px 36px 12px 16px;border-radius:12px;cursor:pointer;transition:border-color .2s;width:100%;text-align:left;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;position:relative}
+.ms-trigger:hover,.ms-trigger.open{border-color:var(--accent)}
+.ms-trigger::after{content:'';position:absolute;right:14px;top:50%;transform:translateY(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid var(--t3);transition:transform .2s}
+.ms-trigger.open::after{transform:translateY(-50%) rotate(180deg)}
+.ms-count{background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px;font-family:'JetBrains Mono';margin-left:6px}
+.ms-dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--card);border:1px solid var(--accent);border-radius:14px;padding:8px;z-index:100;display:none;box-shadow:0 12px 40px var(--shadow);max-height:260px;overflow-y:auto}
+.ms-dropdown.show{display:block}
+.ms-selall{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--accent);border-bottom:1px solid var(--border);margin-bottom:4px;transition:background .15s}
+.ms-selall:hover{background:var(--track-bg)}
+.ms-option{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background .15s;font-size:14px;color:var(--t1)}
+.ms-option:hover{background:var(--track-bg)}
+.ms-check{width:20px;height:20px;border:2px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.ms-option.selected .ms-check{background:var(--accent);border-color:var(--accent)}
+.ms-option.selected .ms-check::after{content:'✓';color:#fff;font-size:12px;font-weight:700}
+.filter-date-row{display:flex;gap:10px}
+.filter-date{flex:1;background:var(--bg);border:1px solid var(--border);color:var(--t1);font-family:'Outfit';font-size:14px;padding:12px 16px;border-radius:12px;outline:none}
+.filter-date:focus{border-color:var(--accent)}
+.filter-date::-webkit-calendar-picker-indicator{filter:invert(.6)}
+.active-filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.filter-tag{background:rgba(139,124,247,.12);border:1px solid rgba(139,124,247,.25);color:var(--a2);font-size:12px;font-weight:600;font-family:'JetBrains Mono';padding:6px 14px;border-radius:50px;display:flex;align-items:center;gap:8px}
+.filter-tag.neutral{background:rgba(255,255,255,.03);border-color:var(--border);color:var(--t3)}
+.results-badge{background:var(--accent);color:#fff;padding:0 12px;border-radius:20px;font-size:12px;font-weight:600;display:inline-block;margin-left:8px}
+.filter-tag .x{cursor:pointer;font-weight:700;opacity:.6;transition:opacity .2s}
+.filter-tag .x:hover{opacity:1}
+
+/* Cards & Grid */
+.card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:28px;transition:all .3s;position:relative}
+.card:hover{border-color:var(--bh);box-shadow:0 12px 40px var(--shadow);transform:translateY(-3px)}
+.card h3{font-size:17px;font-weight:700;margin-bottom:8px;color:var(--t1)}
+.card .d{font-size:13px;color:var(--t2);margin-bottom:20px;line-height:1.4}
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:20px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:20px}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:20px}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:20px;margin-bottom:32px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;position:relative;overflow:hidden;transition:all .3s}
+.kpi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px}
+.kpi:hover{border-color:var(--bh);box-shadow:0 8px 24px var(--shadow)}
+.kpi-bar{height:4px}
+.kpi-l{font-size:11px;color:var(--t3);text-transform:uppercase;font-weight:600;letter-spacing:.8px;margin-bottom:8px;margin-top:8px}
+.kpi-v{font-size:26px;font-weight:800;font-family:'JetBrains Mono';line-height:1}
+.kpi-s{font-size:12px;color:var(--t2);margin-top:6px}
+
+/* Sections */
+.sec{font-size:15px;font-weight:700;color:var(--t1);margin-top:32px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+
+/* Donut */
+.donut-area{display:flex;justify-content:center;align-items:center;gap:30px;margin-top:20px;flex-wrap:wrap}
+.donut-ring{width:180px;height:180px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 8px 32px var(--shadow)}
+.donut-ring .tt{position:absolute;top:-30px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:600;color:var(--t2);white-space:nowrap;font-family:'JetBrains Mono'}
+.donut-center{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.donut-v{font-size:32px;font-weight:800;font-family:'JetBrains Mono'}
+.donut-lbl{font-size:12px;color:var(--t2);margin-top:3px}
+.donut-legend{display:flex;flex-direction:column;gap:12px}
+.donut-legend span{font-size:13px;color:var(--t2);display:flex;align-items:center;gap:10px}
+.donut-legend i{width:16px;height:16px;border-radius:4px}
+
+/* Progress bar */
+.chart-bars{display:flex;align-items:flex-end;gap:4px;height:180px;margin-bottom:12px}
+.bar{flex:1;background:var(--accent);border-radius:8px 8px 0 0;position:relative;transition:all .3s}
+.bar:hover{opacity:.8}
+.bar .tt{position:absolute;background:var(--card);border:1px solid var(--border);padding:6px 10px;border-radius:8px;font-size:11px;white-space:nowrap;pointer-events:none;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:6px;color:var(--t2);opacity:0;transition:opacity .2s}
+.bar:hover .tt{opacity:1}
+.chart-labels{display:flex;gap:4px}
+.chart-lbl{text-align:center;font-size:12px;color:var(--t3);flex:1}
+
+/* Progress Faixa */
+.prog-bars{display:flex;gap:3px;align-items:flex-end;height:180px;margin-top:20px}
+.prog-bar{flex:1;background:var(--accent);border-radius:6px 6px 0 0;position:relative;min-height:6px;transition:all .3s;cursor:pointer}
+.prog-bar:hover{opacity:.8}
+.prog-bar span{position:absolute;top:-24px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:600;color:var(--t1);white-space:nowrap}
+
+/* Horizontal bars */
+.hbar-area{display:flex;flex-direction:column;gap:20px;margin-top:20px;height:fit-content}
+.hbar-row{display:flex;align-items:center;gap:16px;margin-bottom:12px;position:relative}
+.hbar-lbl{font-size:13px;color:var(--t2);font-weight:500;min-width:140px}
+.hbar-track{flex:1;background:var(--hbar-bg);border-radius:12px;height:32px;position:relative;overflow:visible}
+.hbar-fill{height:100%;border-radius:10px;display:flex;align-items:center;padding:0 14px;font-size:13px;font-weight:600;color:#fff;position:relative;overflow:visible;white-space:nowrap;min-width:fit-content;padding-right:12px}
+
+/* Funnel table */
+.ft-table{width:100%;margin-top:20px}
+.ft-row{display:grid;grid-template-columns:140px 80px 100px 1fr;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);font-size:13px}
+.ft-row:last-child{border-bottom:none}
+.ft-tag{display:inline-block;padding:6px 12px;border-radius:10px;font-weight:600;font-size:12px}
+.ft-qty{font-weight:700;color:var(--t1);text-align:right;min-width:60px}
+.ft-pct{color:var(--t2);min-width:80px;text-align:right}
+.ft-track{background:var(--hbar-bg);border-radius:8px;height:20px;position:relative;overflow:hidden}
+.ft-fill{height:100%;border-radius:6px;position:relative;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;min-width:fit-content}
+
+/* Financial */
+.fin{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px 24px;text-align:center;transition:all .3s}
+.fin:hover{border-color:var(--bh);box-shadow:0 8px 24px var(--shadow)}
+.fin-icon{font-size:28px;margin-bottom:8px}
+.fin-val{font-size:22px;font-weight:800;font-family:'JetBrains Mono';margin-bottom:6px}
+.fin-label{font-size:13px;color:var(--t2);margin-bottom:4px}
+.fin-sub{font-size:12px;color:var(--t3)}
+
+/* Trend card */
+.trend-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;position:relative}
+.trend-val{font-size:28px;font-weight:800;font-family:'JetBrains Mono';margin:8px 0}
+.trend-money{font-size:18px;font-weight:700;margin-bottom:8px}
+.trend-pct{display:inline-block;font-size:12px;font-weight:600;padding:4px 10px;border-radius:8px;margin-top:6px}
+
+/* Insights */
+.ins-g{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:16px}
+.ins{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.ins.w{border-color:rgba(251,191,36,.15);background:rgba(251,191,36,.04)}
+.ins.ok{border-color:rgba(45,212,191,.15);background:rgba(45,212,191,.04)}
+.ins.i{border-color:rgba(139,124,247,.15);background:rgba(139,124,247,.04)}
+.ins-t{font-size:14px;font-weight:700;color:var(--t1)}
+.ins-p{font-size:12px;color:var(--t2)}
+
+/* Retention bar */
+.retention-bar{display:flex;gap:2px;height:24px;border-radius:12px;overflow:hidden;margin-top:12px}
+.retention-fill{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;border-radius:4px}
+
+/* Ativação */
+.activ-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.activ-hero{display:flex;flex-direction:column;gap:16px}
+.hero-stat{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:24px 28px;text-align:center;transition:all .3s}
+.hero-stat:hover{border-color:var(--bh);box-shadow:0 12px 40px var(--shadow);transform:translateY(-3px)}
+.hero-big{font-family:'JetBrains Mono';font-size:42px;font-weight:800;line-height:1;margin-bottom:6px}
+.hero-lbl{font-size:12px;font-weight:500;color:var(--t2);text-transform:uppercase;letter-spacing:1px}
+.alert-box{display:flex;align-items:center;gap:10px;padding:14px 18px;border-radius:14px;font-size:13px;font-weight:500}
+.alert-box.ok{background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.15);color:var(--teal)}
+.alert-box.warn{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.15);color:var(--gold)}
+.alert-box.danger{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.15);color:var(--red)}
+.activ-bars{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:28px;transition:all .3s}
+.ab-row{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.ab-lbl{font-size:13px;color:var(--t2);min-width:60px;font-weight:500}
+.ab-track{flex:1;background:var(--hbar-bg);border-radius:12px;height:28px;position:relative}
+.ab-fill{height:100%;border-radius:10px;position:relative;transition:all .3s}
+.ab-fill.accent{background:var(--accent)}
+.ab-fill.teal{background:var(--teal)}
+.ab-fill.dim{background:var(--t3)}
+.ab-pct{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-size:11px;font-weight:700;white-space:nowrap}
+.ab-pct-out{font-size:11px;color:var(--t2);min-width:50px;text-align:right}
+.ab-cnt{font-size:12px;color:var(--t3);min-width:40px;text-align:right}
+
+/* Cross-sell / Oportunidade */
+.rc{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px}
+.rc h3{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.rc-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);font-size:14px}
+.rc-row:last-child{border-bottom:none}
+.rc-l{color:var(--t2);font-weight:500}
+.rc-v{font-weight:700;font-family:'JetBrains Mono'}
+.rc-badge{display:inline-block;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:100px;margin-left:8px}
+.rc-badge.conv{background:rgba(139,124,247,.12);color:var(--accent)}
+.rc-badge.perf{background:rgba(45,212,191,.12);color:var(--teal)}
+.rc-potencial{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;margin-top:8px;border-radius:14px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.12)}
+.rc-potencial .rc-l{color:var(--gold);font-weight:500}
+.rc-alert{display:flex;align-items:center;gap:10px;padding:14px 18px;border-radius:14px;margin-top:12px;font-size:13px;font-weight:500;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.15);color:var(--gold)}
+
+/* Footer */
+.footer{padding:40px 48px 20px;text-align:center;color:var(--t2);font-size:13px;border-top:1px solid var(--border);margin-top:40px}
+
+/* Responsive */
+@media (max-width:1200px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .g5{grid-template-columns:repeat(3,1fr)}
+  .activ-grid{grid-template-columns:1fr}
+}
+@media (max-width:768px){
+  .wrap{padding:0 24px 40px}
+  .hdr{padding:24px 0 20px}
+  .hdr h1{font-size:24px}
+  .kpis{grid-template-columns:1fr}
+  .g2{grid-template-columns:1fr}
+  .g3{grid-template-columns:1fr}
+  .g5{grid-template-columns:1fr}
+  .filter-grid{grid-template-columns:1fr}
+  .ft-row{grid-template-columns:1fr}
+  .ft-qty,.ft-pct{text-align:left}
+  .ins-g{grid-template-columns:1fr}
+  .card{padding:20px}
+}
+</style>
+</head>
+<body>
+  <!-- Login Screen -->
+  <div id="loginScreen">
+    <div class="login-box">
+      <h2>Dra. Andréa Vermont</h2>
+      <p>Customer Success Dashboard</p>
+      <input class="login-input" type="text" id="apiInput" placeholder="API URL (opcional)" onkeydown="if(event.key==='Enter')doLogin()">
+      <div style="position:relative"><input class="login-input" type="password" id="pwdInput" placeholder="Senha de acesso" onkeydown="if(event.key==='Enter')doLogin()" style="padding-right:48px;margin-bottom:0"><button type="button" onclick="const i=document.getElementById('pwdInput');const t=i.type==='password'?'text':'password';i.type=t;this.textContent=t==='password'?'👁':'👁‍🗨'" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:20px;cursor:pointer;color:var(--t2);padding:4px">👁</button></div>
+      <div id="pwdError"></div>
+      <button class="login-btn" onclick="doLogin()">Acessar</button>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="wrap">
+    <div class="hdr">
+      <div class="hdr-left">
+        <div class="hdr-logo" style="width:56px;height:56px;background:linear-gradient(135deg,#8b7cf7,#2dd4bf);border-radius:16px"></div>
+        <div>
+          <h1>Dra. Andréa Vermont</h1>
+          <div class="sub">Customer Success Dashboard</div>
+        </div>
+      </div>
+      <div class="hdr-right">
+        <div class="theme-toggle" onclick="toggleTheme()">
+          <button class="theme-btn active" id="btnDark">🌙</button>
+          <button class="theme-btn" id="btnLight">☀️</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="filter-header">
+        <div class="filter-title">🔍 Filtros</div>
+        <div class="filter-actions">
+          <button class="filter-clear" onclick="clearFilters()">Limpar</button>
+          <button class="filter-apply" onclick="applyFilters()">Aplicar</button>
+        </div>
+      </div>
+      <div class="filter-grid">
+        <div class="filter-group">
+          <div class="filter-label">Produtos</div>
+          <div class="ms-wrap" id="fProduto"></div>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">Status de Compra</div>
+          <div class="ms-wrap" id="fStatusCompra"></div>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">Status Club</div>
+          <div class="ms-wrap" id="fStatusClub"></div>
+        </div>
+      </div>
+    </div>
+    <div class="active-filters" id="tagsArea"><div class="filter-tag neutral">Nenhum filtro ativo — mostrando todos os dados</div></div>
+
+    <!-- Tabs -->
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab('geral',this)">📊 Visão Geral</button>
+      <button class="tab-btn" onclick="switchTab('engajamento',this)">🎯 Engajamento</button>
+      <button class="tab-btn" onclick="switchTab('financeiro',this)">💰 Financeiro</button>
+    </div>
+
+    <!-- TAB CONTENTS -->
+    <div class="tab-content active" id="tab-geral"><div id="contentGeral"></div></div>
+    <div class="tab-content" id="tab-engajamento"><div id="contentEngajamento"></div></div>
+    <div class="tab-content" id="tab-financeiro"><div id="contentFinanceiro"></div></div>
+
+    <div class="footer"><strong>Terceiriza CS</strong> © 2025 — Dra. Andréa Vermont</div>
+  </div>
+
+<script>
+const API_URL='https://script.google.com/macros/s/AKfycbx_MnIkZX07kLJoxPaOTqCdM8TLINpcff6kvjJFlppqhDFvRCx_-i16RIRPzIF1fG1PmA/exec';
+const PWD='Dravermont123';
+const R={PRODUTO:0,STATUS_COMPRA:1,TIPO_ALUNO:2,STATUS_CLUB:3,FUNIL:4,PROG:5,AULAS:6,TOTAL_AULAS:7,ACESSOU:8,QTD_ACESSOS:9,DT_COMPRA:10,ULT_ACESSO:11,VALOR:12,EMAIL:13,DT_APROV:14,PRIM_ACESSO:15};
+
+const fmtN=n=>n.toLocaleString('pt-BR');
+const fmtR=n=>'R$ '+Math.round(n).toLocaleString('pt-BR');
+const fmtRS=n=>{if(n>=1000000)return'R$ '+(n/1000000).toFixed(1).replace('.',',')+' M';return fmtR(n);};
+const fmtP=n=>n.toFixed(1).replace('.',',')+' %';
+const FUNNEL=['Nunca acessou','Acessou mas não consumiu','Consumiu pouco','Desengajado','Engajado','Recompra'];
+const FUNNEL_COLORS=['var(--red)','var(--orange)','var(--gold)','var(--pink)','var(--teal)','var(--green)'];
+const FUNNEL_BG=['rgba(248,113,113,.12)','rgba(251,146,60,.12)','rgba(251,191,36,.12)','rgba(244,114,182,.12)','rgba(45,212,191,.12)','rgba(52,211,153,.12)'];
+const progOrder=['0','1-10','11-20','21-30','31-40','41-50','51-60','61-70','71-80','81-90','91-100'];
+const progColors=['var(--red)','var(--pink)','var(--orange)','var(--gold)','var(--sky)','var(--cyan)','var(--teal)','var(--green)','var(--accent)','var(--a2)','var(--sky)'];
+const tipoColors={'BUYER':'var(--green)','IMPORTED':'var(--accent)','GUEST':'var(--gold)','FREE':'var(--sky)'};
+
+let RAW_DATA=null;let TODAY_MS=0;
+
+function doLogin(){const u=document.getElementById('apiInput').value;const v=document.getElementById('pwdInput').value;if(v===PWD){document.getElementById('loginScreen').style.display='none';loadData(u||API_URL);}else{document.getElementById('pwdError').style.display='block';}}
+function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('btnDark').classList.toggle('active',!d);document.getElementById('btnLight').classList.toggle('active',d);}
+function switchTab(tab,btn){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));document.getElementById('tab-'+tab).classList.add('active');btn.classList.add('active');}
+
+// Multi-select
+function buildMS(id,values){
+  const wrap=document.getElementById(id);
+  let html='<div class="ms-trigger" onclick="toggleMS(this)">Todos</div><div class="ms-dropdown">';
+  html+='<div class="ms-selall" onclick="toggleAll(this)">☑ Marcar todos</div>';
+  values.forEach(v=>{html+='<div class="ms-option" onclick="toggleOpt(this)" data-val="'+v+'"><div class="ms-check"></div>'+v+'</div>';});
+  html+='</div>';wrap.innerHTML=html;
+}
+function toggleMS(el){const dd=el.nextElementSibling;dd.classList.toggle('show');el.classList.toggle('open',dd.classList.contains('show'));}
+function toggleAll(el){const dd=el.parentElement;const allSel=dd.querySelectorAll('.ms-option.selected').length===dd.querySelectorAll('.ms-option').length;dd.querySelectorAll('.ms-option').forEach(o=>o.classList.toggle('selected',!allSel));updateMSLabel(dd.parentElement);}
+function toggleOpt(el){el.classList.toggle('selected');updateMSLabel(el.closest('.ms-wrap'));}
+function updateMSLabel(wrap){const cnt=wrap.querySelectorAll('.ms-option.selected').length;const trigger=wrap.querySelector('.ms-trigger');let label='Todos';if(cnt>0&&cnt<wrap.querySelectorAll('.ms-option').length){label=cnt+' selecionados';trigger.innerHTML=label+'<span class="ms-count">'+cnt+'</span>';}else if(cnt===0){trigger.innerHTML=label;}else{trigger.innerHTML=label;}}
+function getMS(id){const opts=[];document.getElementById(id).querySelectorAll('.ms-option.selected').forEach(o=>opts.push(o.dataset.val));return opts;}
+function clearFilters(){document.querySelectorAll('.ms-wrap').forEach(w=>{w.querySelectorAll('.ms-option').forEach(o=>o.classList.remove('selected'));updateMSLabel(w);});updateTags([]);}
+function applyFilters(){const fp=getMS('fProduto');const fsc=getMS('fStatusCompra');const fcl=getMS('fStatusClub');updateTags([...fp,...fsc,...fcl]);const rows=getFilteredRows();renderAll(rows);}
+function updateTags(tags){const area=document.getElementById('tagsArea');if(!tags.length){area.innerHTML='<div class="filter-tag neutral">Nenhum filtro ativo — mostrando todos os dados</div>';return;}area.innerHTML=tags.map(t=>'<div class="filter-tag">'+t+' <span class="x" onclick="this.parentElement.remove()">✕</span></div>').join('')+'<span class="results-badge">→ '+fmtN(RAW_DATA.filter(r=>{const p=r[R.PRODUTO];const s=r[R.STATUS_COMPRA];const c=r[R.STATUS_CLUB];return(!tags.length||tags.includes(p)||tags.includes(s)||tags.includes(c));}).length)+' alunos filtrados</span>';}
+function getFilteredRows(){const fp=getMS('fProduto');const fsc=getMS('fStatusCompra');const fcl=getMS('fStatusClub');return RAW_DATA.filter(r=>{const p=r[R.PRODUTO];const s=r[R.STATUS_COMPRA];const c=r[R.STATUS_CLUB];return(!fp.length||fp.includes(p))&&(!fsc.length||fsc.includes(s))&&(!fcl.length||fcl.includes(c));});}
+
+function normProd(p){
+  if(!p)return'outro';
+  const lc=p.toLowerCase();
+  if(lc.includes('psicanálise contemporânea'))return'base';
+  if(lc.includes('mentoria no divã'))return'asc';
+  if(lc.includes('escola para pais'))return'escola';
+  if(lc.includes('neurociência'))return'neuro';
+  if(lc.includes('tea'))return'tea';
+  return'outro';
+}
+
+function aggregate(rows){
+  const a={
+    total:rows.length,funil:{},faixaProg:{},faixaDias:{},tipoAluno:{},progVals:[],acessosMes:[],acessou:0,nuncaAcessou:0,
+    ativos:0,bloqueados:0,produtos:new Set(),
+    aulasComp:{base:[],asc:[],escola:[],neuro:[],tea:[],outro:[]},
+    totalAulas:{base:[],asc:[],escola:[],neuro:[],tea:[],outro:[]},
+    emails:{base:new Set(),asc:new Set(),escola:new Set(),neuro:new Set(),tea:new Set(),outro:new Set()},
+    progPorEmail:{},
+    fin:{compras_v:0,compras_n:0,reembolso_v:0,reembolso_n:0,chargeback_v:0,chargeback_n:0,cancelado_v:0,cancelado_n:0},
+    reemb30:{n:0,v:0},reemb60:{n:0,v:0},reemb90:{n:0,v:0},
+    vend30:{n:0,v:0},vend60:{n:0,v:0},vend90:{n:0,v:0}
+  };
+  const now=new Date();const d30=new Date(now.getTime()-30*86400000);const d60=new Date(now.getTime()-60*86400000);const d90=new Date(now.getTime()-90*86400000);
+  rows.forEach(r=>{
+    a.produtos.add(r[R.PRODUTO]);
+    if(r[R.STATUS_CLUB]==='ACTIVE')a.ativos++;else if(r[R.STATUS_CLUB]==='BLOCKED'||r[R.STATUS_CLUB]==='BLOCKED_BY_OWNER')a.bloqueados++;
+    if(r[R.FUNIL])a.funil[r[R.FUNIL]]=(a.funil[r[R.FUNIL]]||0)+1;
+    if(r[R.TIPO_ALUNO])a.tipoAluno[r[R.TIPO_ALUNO]]=(a.tipoAluno[r[R.TIPO_ALUNO]]||0)+1;
+    if(r[R.PROG]!==null){
+      a.progVals.push(r[R.PROG]);
+      const p=r[R.PROG];
+      const fp=p===0?'0':p<=10?'1-10':p<=20?'11-20':p<=30?'21-30':p<=40?'31-40':p<=50?'41-50':p<=60?'51-60':p<=70?'61-70':p<=80?'71-80':p<=90?'81-90':'91-100';
+      a.faixaProg[fp]=(a.faixaProg[fp]||0)+1;
+    }
+    if(r[R.QTD_ACESSOS]>=0&&r[R.DT_COMPRA]){const dd=Math.max(Math.floor((TODAY_MS-r[R.DT_COMPRA])/86400000),1);a.acessosMes.push(r[R.QTD_ACESSOS]/Math.max(dd/30,1));}
+    if(r[R.ACESSOU])a.acessou++;else a.nuncaAcessou++;
+    if(r[R.ULT_ACESSO]){const d=Math.floor((TODAY_MS-r[R.ULT_ACESSO])/86400000);if(d>=0){const fd=d<=14?'0-14d':d<=30?'15-30d':d<=60?'31-60d':'>60d';a.faixaDias[fd]=(a.faixaDias[fd]||0)+1;}}
+    const pk=normProd(r[R.PRODUTO]);
+    if(r[R.AULAS]!==null)a.aulasComp[pk].push(r[R.AULAS]);
+    if(r[R.TOTAL_AULAS]!==null)a.totalAulas[pk].push(r[R.TOTAL_AULAS]);
+    if(r[R.EMAIL])a.emails[pk].add(r[R.EMAIL]);
+    if(r[R.EMAIL]&&r[R.PROG]!==null){
+      if(!a.progPorEmail[r[R.EMAIL]])a.progPorEmail[r[R.EMAIL]]={};
+      const prev=a.progPorEmail[r[R.EMAIL]][r[R.PRODUTO]];
+      if(prev===undefined||r[R.PROG]>prev)a.progPorEmail[r[R.EMAIL]][r[R.PRODUTO]]=r[R.PROG];
+    }
+    if(r[R.VALOR]>0&&r[R.STATUS_COMPRA]){
+      if(r[R.STATUS_COMPRA]==='COMPLETE'||r[R.STATUS_COMPRA]==='APPROVED'){
+        a.fin.compras_v+=r[R.VALOR];a.fin.compras_n++;
+        if(r[R.DT_APROV]){
+          if(r[R.DT_APROV]>=d30){a.vend30.n++;a.vend30.v+=r[R.VALOR];}
+          if(r[R.DT_APROV]>=d60){a.vend60.n++;a.vend60.v+=r[R.VALOR];}
+          if(r[R.DT_APROV]>=d90){a.vend90.n++;a.vend90.v+=r[R.VALOR];}
+        }
+      }else if(r[R.STATUS_COMPRA]==='REFUNDED'){
+        a.fin.reembolso_v+=r[R.VALOR];a.fin.reembolso_n++;
+        if(r[R.DT_APROV]){
+          if(r[R.DT_APROV]>=d30){a.reemb30.n++;a.reemb30.v+=r[R.VALOR];}
+          if(r[R.DT_APROV]>=d60){a.reemb60.n++;a.reemb60.v+=r[R.VALOR];}
+          if(r[R.DT_APROV]>=d90){a.reemb90.n++;a.reemb90.v+=r[R.VALOR];}
+        }
+      }else if(r[R.STATUS_COMPRA]==='CHARGEBACK'){a.fin.chargeback_v+=r[R.VALOR];a.fin.chargeback_n++;}
+      else if(r[R.STATUS_COMPRA]==='CANCELLED'){a.fin.cancelado_v+=r[R.VALOR];a.fin.cancelado_n++;}
+    }
+  });
+  return a;
+}
+
+function avg(arr){return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:0;}
+function rd(n){return Math.round(n*10)/10;}
+function moda(arr){if(!arr.length)return 0;const c={};arr.forEach(v=>c[v]=(c[v]||0)+1);let m=0,r=0;for(const k in c)if(c[k]>m){m=c[k];r=Number(k);}return r;}
+
+function calcCrossSell(sourceType){
+  const srcEmails=new Set(),ascEmails=new Set(),srcProg={},srcDt={},ascDt={};
+  RAW_DATA.forEach(r=>{
+    if(!r[R.EMAIL]||!(r[R.STATUS_COMPRA]==='COMPLETE'||r[R.STATUS_COMPRA]==='APPROVED'))return;
+    const np=normProd(r[R.PRODUTO]);
+    if(np===sourceType){
+      srcEmails.add(r[R.EMAIL]);
+      if(r[R.DT_APROV]){if(!srcDt[r[R.EMAIL]]||r[R.DT_APROV]<srcDt[r[R.EMAIL]])srcDt[r[R.EMAIL]]=r[R.DT_APROV];}
+      if(r[R.PROG]!==null){if(!srcProg[r[R.EMAIL]]||r[R.PROG]>srcProg[r[R.EMAIL]])srcProg[r[R.EMAIL]]=r[R.PROG];}
+    }
+    if(np==='asc'){
+      ascEmails.add(r[R.EMAIL]);
+      if(r[R.DT_APROV]){if(!ascDt[r[R.EMAIL]]||r[R.DT_APROV]<ascDt[r[R.EMAIL]])ascDt[r[R.EMAIL]]=r[R.DT_APROV];}
+    }
+  });
+  let n=0;const progs=[],days=[];
+  ascEmails.forEach(e=>{if(srcEmails.has(e)){n++;if(srcProg[e]!==undefined)progs.push(srcProg[e]);if(srcDt[e]&&ascDt[e]){const diff=Math.floor((ascDt[e]-srcDt[e])/86400000);if(diff>=0)days.push(diff);}}});
+  const srcT=srcEmails.size,ascT=ascEmails.size;
+  const avgP=progs.length?rd(avg(progs)):0;
+  const pot=srcT-n;const pctP=srcT>0?rd(pot/srcT*100):0;
+  let med=0;if(days.length){const s=[...days].sort((a,b)=>a-b);const m=Math.floor(s.length/2);med=s.length%2?s[m]:Math.round((s[m-1]+s[m])/2);}
+  const w=days.filter(d=>d<=60).length;const pw=days.length>0?rd(w/days.length*100):0;
+  return{n,srcT,ascT,avgP,pot,pctP,med,pw};
+}
+
+function donutHTML(c1,deg,c2,cVal,cLbl,tt,l1,n1,lc1,l2,n2,lc2){
+  return'<div class="donut-ring" style="background:conic-gradient('+c1+' 0deg '+deg+'deg,'+c2+' '+deg+'deg 360deg)"><span class="tt">'+tt+'</span><div style="width:120px;height:120px;background:var(--donut-hole);border-radius:50%;display:flex;align-items:center;justify-content:center"><div class="donut-center"><div class="donut-v" style="color:'+c1+'">'+cVal+'</div><div class="donut-lbl">'+cLbl+'</div></div></div></div><div class="donut-legend"><span><i style="background:'+lc1+'"></i>'+l1+' ('+n1+')</span><span><i style="background:'+lc2+'"></i>'+l2+' ('+n2+')</span></div>';
+}
+
+function multiSegmentDonut(products,colors,tt){
+  const total=Object.values(products).reduce((a,b)=>a+b,0);
+  if(total===0)return'<div class="donut-ring" style="background:var(--hbar-bg)"><div style="width:120px;height:120px;background:var(--donut-hole);border-radius:50%;display:flex;align-items:center;justify-content:center"><div class="donut-center"><div class="donut-v">0</div></div></div></div>';
+  let grad='conic-gradient(';let deg=0;
+  const order=['base','escola','neuro','tea','asc','outro'];
+  order.forEach(k=>{
+    if(products[k]){
+      const pct=products[k]/total*100;const segDeg=pct/100*360;
+      grad+=colors[k]+' '+deg+'deg '+Math.round(deg+segDeg)+'deg,';deg+=segDeg;
+    }
+  });
+  grad=grad.slice(0,-1)+')';
+  let leg='';
+  order.forEach(k=>{
+    if(products[k]){
+      const lbl={base:'Psicanálise',escola:'Escola p/ Pais',neuro:'Neurociência',tea:'TEA/TDAH',asc:'Mentoria',outro:'Outro'}[k];
+      const pct=rd(products[k]/total*100);
+      leg+='<span><i style="background:'+colors[k]+'"></i>'+lbl+' ('+fmtN(products[k])+' · '+fmtP(pct)+')</span>';
+    }
+  });
+  return'<div class="donut-ring" style="background:'+grad+'"><span class="tt">'+tt+'</span><div style="width:120px;height:120px;background:var(--donut-hole);border-radius:50%;display:flex;align-items:center;justify-content:center"><div class="donut-center"><div class="donut-v">'+fmtN(total)+'</div><div class="donut-lbl">alunos</div></div></div></div><div class="donut-legend">'+leg+'</div>';
+}
+
+function kpiCard(bg,label,value,sub,color){
+  return'<div class="kpi"><div class="kpi-bar" style="background:'+bg+'"></div><div class="kpi-l">'+label+'</div><div class="kpi-v" style="color:'+color+'">'+value+'</div>'+(sub?'<div class="kpi-s">'+sub+'</div>':'')+'</div>';
+}
+
+function renderAll(rows){
+  const a=aggregate(rows);const f=a.fin;
+
+  // Base KPIs exclude ascensão
+  const rowsSemAsc=rows.filter(r=>normProd(r[R.PRODUTO])!=='asc');
+  const aSA=aggregate(rowsSemAsc);
+
+  // Ascensão calc from RAW_DATA
+  const baseEmails=new Set(),ascEmails=new Set();
+  RAW_DATA.forEach(r=>{
+    const np=normProd(r[R.PRODUTO]);
+    const em=(r[R.EMAIL]||'').toLowerCase().trim();
+    if(!em)return;
+    if(np!=='asc'&&np!=='outro')baseEmails.add(em);
+    if(np==='asc')ascEmails.add(em);
+  });
+  let ascCount=0;
+  baseEmails.forEach(e=>{if(ascEmails.has(e))ascCount++;});
+  const ascPct=baseEmails.size?(ascCount/baseEmails.size*100).toFixed(1):'0.0';
+
+  const perda=f.reembolso_v+f.chargeback_v+f.cancelado_v;
+  const bruto=f.compras_v+perda;const ttx=f.compras_n+f.reembolso_n+f.chargeback_n+f.cancelado_n;
+  const pctPerda=bruto>0?perda/bruto*100:0;const pctReemb=ttx>0?f.reembolso_n/ttx*100:0;
+  const avgProg=rd(avg(aSA.progVals));const avgAcsMes=rd(avg(aSA.acessosMes));
+  const pctNunca=aSA.total>0?rd(aSA.nuncaAcessou/aSA.total*100):0;const pctAcessou=a.total>0?rd(a.acessou/a.total*100):0;
+  const pctAtivos=a.total>0?rd(a.ativos/a.total*100):0;const pctBloq=a.total>0?rd(a.bloqueados/a.total*100):0;
+  const fp=getMS('fProduto');const produtoFiltrado=fp.length>0;const isSingleProd=fp.length===1;const singleProd=isSingleProd?fp[0]:null;
+
+  // ========== TAB 1: VISÃO GERAL ==========
+  let h1='';
+  h1+='<div class="kpis">';
+  h1+=kpiCard('linear-gradient(90deg,var(--accent),var(--a2))','Total Alunos',fmtN(aSA.total),'','var(--a2)');
+  h1+=kpiCard('linear-gradient(90deg,var(--teal),var(--green))','Média Progresso',fmtP(avgProg),'','var(--teal)');
+  h1+=kpiCard('linear-gradient(90deg,var(--sky),var(--cyan))','Nunca Acessaram',fmtP(pctNunca),aSA.nuncaAcessou+' alunos','var(--sky)');
+  h1+=kpiCard('linear-gradient(90deg,var(--pink),var(--red))','ASCENSÃO MENTORIA',fmtP(ascPct),ascCount+' de '+baseEmails.size+' alunos','var(--pink)');
+  h1+='</div>';
+
+  // Distribuição por Produto (multi-segment)
+  const prodCounts={base:0,asc:0,escola:0,neuro:0,tea:0,outro:0};
+  const prodColors={base:'var(--accent)',asc:'var(--green)',escola:'var(--teal)',neuro:'var(--gold)',tea:'var(--pink)',outro:'var(--t3)'};
+  rows.forEach(r=>{
+    const np=normProd(r[R.PRODUTO]);
+    prodCounts[np]++;
+  });
+  h1+='<div class="sec">📦 Distribuição por Produto</div>';
+  h1+='<div class="g2"><div class="card"><h3>Quantidade de Alunos</h3><div class="d">Todos os produtos</div><div class="donut-area">'+multiSegmentDonut(prodCounts,prodColors,'Total: '+fmtN(rows.length)+' alunos')+'</div></div>';
+
+  // Jornada (exclude asc)
+  const funilCounts={};
+  FUNNEL.forEach(f=>{funilCounts[f]=0;});
+  rowsSemAsc.forEach(r=>{
+    if(r[R.FUNIL]&&FUNNEL.includes(r[R.FUNIL]))funilCounts[r[R.FUNIL]]++;
+  });
+  const fd=FUNNEL.map(f=>funilCounts[f]||0);
+  const mxF=Math.max(...fd,1);
+  const degFunil=fd[5]>0?Math.round(fd[5]/(aSA.total||1)*360):0;
+  h1+='<div class="card"><h3>Distribuição por Jornada</h3><div class="d">Estágios de engajamento</div><div class="donut-area">'+donutHTML(FUNNEL_COLORS[5],degFunil,'var(--t3)',fmtP(aSA.total>0?fd[5]/aSA.total*100:0),'Recompra','Funil completo','Recompra',fd[5]||0,FUNNEL_COLORS[5],'Outros',aSA.total-(fd[5]||0),'var(--t3)')+'</div></div></div>';
+
+  // Tipo de Aluno
+  const tipoAluno={BUYER:0,FREE:0,IMPORTED:0,GUEST:0};
+  rows.forEach(r=>{if(r[R.TIPO_ALUNO]&&tipoAluno.hasOwnProperty(r[R.TIPO_ALUNO]))tipoAluno[r[R.TIPO_ALUNO]]++;});
+  const taTotal=Object.values(tipoAluno).reduce((a,b)=>a+b,0);
+  let conic='',legH='';
+  const tipoOrder=['BUYER','FREE','IMPORTED','GUEST'];
+  const tipoNames={BUYER:'Compradores',FREE:'Gratuito',IMPORTED:'Importado',GUEST:'Guest'};
+  const tipoColorMap={BUYER:'var(--green)',FREE:'var(--sky)',IMPORTED:'var(--accent)',GUEST:'var(--gold)'};
+  let degTipo=0;
+  tipoOrder.forEach(k=>{
+    if(tipoAluno[k]){
+      const pct=tipoAluno[k]/taTotal*100;const segDeg=pct/100*360;
+      conic+=tipoColorMap[k]+' '+degTipo+'deg '+(degTipo+segDeg)+'deg,';
+      legH+='<span><i style="background:'+tipoColorMap[k]+'"></i>'+tipoNames[k]+' ('+fmtN(tipoAluno[k])+' · '+fmtP(pct)+')</span>';
+      degTipo+=segDeg;
+    }
+  });
+  conic=conic.slice(0,-1);
+  const ttTipo=FUNNEL.map((f,i)=>f+': '+fd[i]).join(' · ');
+  h1+='<div class="g2" style="margin-top:20px"><div class="card"><h3>Tipo de Aluno</h3><div class="d">Distribuição por categoria</div><div class="donut-area"><div class="donut-ring" style="background:conic-gradient('+conic+')"><span class="tt">'+ttTipo+'</span><div style="width:120px;height:120px;background:var(--donut-hole);border-radius:50%;display:flex;align-items:center;justify-content:center"><div class="donut-center"><div class="donut-v" style="color:var(--accent)">'+fmtN(taTotal)+'</div><div class="donut-lbl">alunos</div></div></div></div><div class="donut-legend">'+legH+'</div></div></div>';
+
+  // Aulas
+  if(isSingleProd&&singleProd){
+    const pk=normProd(singleProd);
+    h1+='<div class="card"><h3>Aulas: Completadas vs Média</h3>';
+    const tA=moda(aSA.totalAulas[pk]);const mA=rd(avg(aSA.aulasComp[pk]));const pA=tA>0?mA/tA*100:0;
+    h1+='<div class="d">'+tA+' aulas · média '+mA.toFixed(1).replace('.',',')+' assistidas ('+pA.toFixed(1)+'%)</div>';
+    h1+='<div class="hbar-area" style="height:auto;gap:24px"><div class="hbar-row"><span class="hbar-lbl">Total de Aulas</span><div class="hbar-track"><div class="hbar-fill" style="width:100%;background:var(--accent)">'+tA+' aulas</div></div></div>';
+    h1+='<div class="hbar-row"><span class="hbar-lbl">Média Assistida</span><div class="hbar-track"><div class="hbar-fill" style="width:'+pA.toFixed(0)+'%;background:var(--teal)">'+mA.toFixed(1).replace('.',',')+' aulas ('+pA.toFixed(1)+'%)</div></div></div></div>';
+  }else{
+    h1+='<div class="card"><h3>Aulas: Completadas vs Média</h3><div class="d">Separado por produto</div><div class="hbar-area" style="height:auto;gap:20px">';
+    const prodLabels={base:'Psicanálise Contemporânea',asc:'Mentoria no Divã',escola:'Escola para Pais',neuro:'Neurociência',tea:'TEA/TDAH'};
+    ['base','asc','escola','neuro','tea'].forEach(pk=>{
+      if(a.totalAulas[pk]&&a.totalAulas[pk].length>0){
+        const tA=moda(a.totalAulas[pk]);const mA=rd(avg(a.aulasComp[pk]));const pA=tA>0?mA/tA*100:0;
+        h1+='<div style="font-size:13px;color:var(--a2);font-weight:600;margin-top:8px">'+prodLabels[pk]+'</div>';
+        h1+='<div class="hbar-row"><span class="hbar-lbl">Total de Aulas</span><div class="hbar-track"><div class="hbar-fill" style="width:100%;background:var(--accent)">'+tA+' aulas</div></div></div>';
+        h1+='<div class="hbar-row"><span class="hbar-lbl">Média Assistida</span><div class="hbar-track"><div class="hbar-fill" style="width:'+Math.max(pA,2).toFixed(0)+'%;background:var(--teal)">'+mA.toFixed(1).replace('.',',')+' aulas ('+pA.toFixed(1)+'%)</div></div></div>';
+      }
+    });h1+='</div>';
+  }
+  h1+='</div></div>';
+
+  // Faixa de Progresso (91-100 in blue)
+  h1+='<div class="sec">📈 Faixa de Progresso</div>';
+  h1+='<div class="card"><h3>Distribuição por Range</h3><div class="d">Como estão distribuídos os alunos</div><div class="prog-bars">';
+  const mxProg=Math.max(...Object.values(aSA.faixaProg),1);
+  progOrder.forEach((p,i)=>{
+    const c=aSA.faixaProg[p]||0;const pct=aSA.total>0?c/aSA.total*100:0;
+    let color=progColors[i];
+    if(p==='91-100')color='var(--sky)';
+    h1+='<div class="prog-bar" style="height:'+Math.max(c/mxProg*90,5)+'%;background:'+color+'"><span>'+pct.toFixed(1)+'%</span><span class="tt">'+p+': '+c+' alunos</span></div>';
+  });
+  h1+='</div></div>';
+
+  // Status Club
+  h1+='<div class="sec">🔐 Status Club</div>';
+  h1+='<div class="card"><h3>Retenção de Acesso</h3><div class="d">Ativos vs Bloqueados</div>';
+  h1+='<div class="retention-bar"><div class="retention-fill" style="width:'+Math.max(pctAtivos,2)+'%;background:var(--green)">'+fmtP(pctAtivos)+'</div><div class="retention-fill" style="width:'+Math.max(pctBloq,2)+'%;background:var(--red);opacity:.7">'+fmtP(pctBloq)+'</div></div>';
+  h1+='<div style="display:flex;justify-content:space-between;margin-top:14px;font-size:13px;color:var(--t2)"><span>🟢 '+fmtN(a.ativos)+' ativos</span><span>🔴 '+fmtN(a.bloqueados)+' bloqueados</span></div></div></div>';
+
+  // Detalhamento do Funil (sem ascensão)
+  h1+='<div class="sec">🎯 Detalhamento do Funil</div>';
+  h1+='<div class="card"><h3>Progression Analysis</h3><div class="d">Alunos por estágio (sem Ascensão)</div><div class="chart"><div class="chart-bars">';
+  FUNNEL.forEach((f,i)=>{const q=fd[i];const hh=Math.round(q/mxF*90);const pc=aSA.total>0?q/aSA.total*100:0;h1+='<div class="bar" style="height:'+hh+'%;background:'+FUNNEL_COLORS[i]+'"><span style="position:absolute;top:-22px;left:50%;transform:translateX(-50%);font-size:11px;font-family:JetBrains Mono;font-weight:600;color:var(--t1);white-space:nowrap">'+pc.toFixed(1)+'%</span><span class="tt">'+f+': '+q+' ('+fmtP(pc)+')</span></div>';});
+  h1+='</div><div class="chart-labels"><div class="chart-lbl" style="flex:1">'+FUNNEL.join('</div><div class="chart-lbl" style="flex:1">')+'</div></div></div>';
+  h1+='<div style="margin-top:20px"><div class="ft-table">';
+  FUNNEL.forEach((f,i)=>{const q=fd[i];const pc=aSA.total>0?q/aSA.total*100:0;h1+='<div class="ft-row"><span class="ft-tag" style="background:'+FUNNEL_BG[i]+';color:'+FUNNEL_COLORS[i]+'">'+f+'</span><span class="ft-qty"'+(f==='Recompra'?' style="color:var(--green)"':'')+'>'+fmtN(q)+'</span><span class="ft-pct">'+fmtP(pc)+'</span><div class="ft-track"><div class="ft-fill" style="width:'+pc.toFixed(1)+'%;background:'+FUNNEL_COLORS[i]+'"></div></div></div>';});
+  h1+='</div></div></div></div>';
+
+  // Detalhamento por Produto
+  h1+='<div class="sec">📊 Detalhamento por Produto</div>';
+  h1+='<div class="card"><h3>Alunos por Produto</h3><div class="d">Representatividade</div><div class="hbar-area" style="height:auto;gap:24px">';
+  const mxProd=Math.max(...Object.values(prodCounts),1);
+  const prodLabelsMap={base:'Psicanálise Contemporânea',asc:'Mentoria no Divã',escola:'Escola para Pais',neuro:'Neurociência',tea:'TEA/TDAH',outro:'Outro'};
+  ['base','asc','escola','neuro','tea','outro'].forEach(pk=>{
+    if(prodCounts[pk]){
+      const pc=rows.length>0?prodCounts[pk]/rows.length*100:0;
+      h1+='<div class="hbar-row"><span class="hbar-lbl">'+prodLabelsMap[pk]+'</span><div class="hbar-track"><div class="hbar-fill" style="width:'+pc.toFixed(0)+'%;background:'+prodColors[pk];overflow:visible;white-space:nowrap;min-width:fit-content;padding-right:12px+'">'+fmtN(prodCounts[pk])+' ('+fmtP(pc)+')</div></div></div>';
+    }
+  });
+  h1+='</div></div>';
+
+  // Análise de Acesso
+  h1+='<div class="sec">👁️ Análise de Acesso</div>';
+  const d60=a.faixaDias['>60d']||0;const d31=a.faixaDias['31-60d']||0;const d15=a.faixaDias['15-30d']||0;const d0=a.faixaDias['0-14d']||0;
+  const pD60=a.total>0?d60/a.total*100:0;const degD=Math.round((100-pD60)/100*360);
+  h1+='<div class="g2"><div class="card"><h3>Dias sem Acesso</h3><div class="d">Distribuição por faixa de inatividade</div><div class="donut-area">'+donutHTML('var(--sky)',degD,'var(--red)',fmtP(pD60),'>60 dias','0-14d: '+d0+' · 15-30d: '+d15+' · 31-60d: '+d31+' · >60d: '+d60,'<60d',(a.total-d60),'var(--sky)','>60d',d60,'var(--red)')+'</div></div>';
+
+  // Distribuição por dia de ativação
+  const activRows=rows.filter(r=>r[R.TIPO_ALUNO]==='BUYER'&&(r[R.STATUS_COMPRA]==='COMPLETE'||r[R.STATUS_COMPRA]==='APPROVED'));
+  const actBuyers=activRows.length;const actDiffs=[];let actNever=0;
+  activRows.forEach(r=>{if(!r[R.PRIM_ACESSO]||!r[R.ACESSOU]){actNever++;return;}if(!r[R.DT_COMPRA])return;const diff=Math.floor((r[R.PRIM_ACESSO]-r[R.DT_COMPRA])/86400000);if(diff<0)return;actDiffs.push(diff);});
+  const actValid=actDiffs.length;const actD0c=actDiffs.filter(d=>d===0).length;const actD1c=actDiffs.filter(d=>d===1).length;const actD2c=actDiffs.filter(d=>d>=2).length;
+  const actAvg=actValid>0?rd(actDiffs.reduce((s,d)=>s+d,0)/actValid):0;
+  const actPD0=actValid>0?rd(actD0c/actValid*100):0;const actPD1=actValid>0?rd(actD1c/actValid*100):0;const actPD2=actValid>0?rd(actD2c/actValid*100):0;
+  const actPUntilD1=actValid>0?rd((actD0c+actD1c)/actValid*100):0;
+  h1+='<div class="card"><h3>Velocidade de Ativação</h3><div class="d">Apenas Buyers aprovados · '+actBuyers+' alunos</div>';
+  h1+='<div class="hero-stat" style="margin-bottom:12px;background:transparent;border:none;padding:0"><div class="hero-big" style="color:var(--accent)">'+actAvg.toFixed(1).replace('.',',')+'<span style="font-size:20px;font-weight:400;color:var(--t2)"> dias</span></div><div class="hero-lbl">Tempo médio até o 1º acesso</div></div>';
+  h1+='<div class="alert-box ok">✓ '+actPUntilD1.toFixed(1).replace('.',',')+'% dos alunos acessam até D+1</div>';
+  h1+='<div style="display:flex;flex-direction:column;gap:12px;margin-top:12px">';
+  [['D+0',actPD0,actD0c,'accent'],['D+1',actPD1,actD1c,'teal'],['D+2+',actPD2,actD2c,'dim']].forEach(([lbl,pct,cnt,cls])=>{
+    h1+='<div class="ab-row"><span class="ab-lbl">'+lbl+'</span><div class="ab-track"><div class="ab-fill '+cls+'" style="width:'+Math.max(pct,1.5)+'%">'+(pct>15?'<span class="ab-pct">'+pct.toFixed(1)+'%</span>':'')+'</div></div>'+(pct<=15?'<span class="ab-pct-out">'+pct.toFixed(1)+'%</span>':'')+'<span class="ab-cnt">'+cnt+'</span></div>';
+  });h1+='</div>';
+  h1+='</div></div>';
+
+  // Cross-sell: Base → Ascensão
+  h1+='<div class="sec">🔄 Oportunidade entre Produtos</div>';
+  const csBase=calcCrossSell('base');
+  h1+='<div class="g2">';
+  h1+='<div class="rc"><h3>Produtos Base → Mentoria no Divã <span class="rc-badge conv">Conversão</span></h3>';
+  h1+='<div class="rc-row"><span class="rc-l">Alunos base que compraram Mentoria</span><span class="rc-v" style="color:var(--teal)">'+csBase.n+'</span></div>';
+  h1+='<div class="rc-row"><span class="rc-l">% de cross-sell</span><span class="rc-v" style="color:var(--teal)">'+fmtP(csBase.srcT>0?rd(csBase.n/csBase.srcT*100):0)+'</span></div>';
+  h1+='<div class="rc-potencial"><span class="rc-l">Potencial restante</span><span class="rc-v" style="color:var(--gold)">'+fmtN(csBase.pot)+' <small style="font-size:12px;font-weight:400;color:var(--t2)">('+fmtP(csBase.pctP)+')</small></span></div></div>';
+  h1+='<div class="rc" style="background:linear-gradient(135deg,var(--card) 0%,rgba(45,212,191,.04) 100%);border-color:rgba(45,212,191,.15)"><h3 style="color:var(--teal)">Perfil de quem compra <span class="rc-badge perf">Mentoria</span></h3>';
+  h1+='<div class="rc-row"><span class="rc-l">Progresso médio nos base</span><span class="rc-v" style="color:var(--teal)">'+fmtP(csBase.avgP)+'</span></div>';
+  h1+='<div class="rc-row"><span class="rc-l">Tempo médio até o cross-sell</span><span class="rc-v" style="color:var(--gold)">'+csBase.med+' <small style="font-size:12px;font-weight:400;color:var(--t2)">dias (mediana)</small></span></div>';
+  h1+='<div class="rc-row"><span class="rc-l">Compraram Mentoria vindos dos base</span><span class="rc-v" style="color:var(--green)">'+fmtP(csBase.ascT>0?rd(csBase.n/csBase.ascT*100):0)+'</span></div>';
+  if(csBase.pw>0)h1+='<div class="rc-alert">⚡ '+fmtP(csBase.pw)+' compram nos primeiros 60 dias</div>';
+  h1+='</div></div>';
+
+  document.getElementById('contentGeral').innerHTML=h1;
+
+  // ========== TAB 2: ENGAJAMENTO ==========
+  let h2='';
+  h2+='<div class="sec">💡 Insights — Engajamento</div><div class="ins-g">';
+  if(pD60>40)h2+='<div class="ins w"><div class="ins-t">⚠️ '+fmtP(pD60)+' inativos há +60 dias</div><div class="ins-p">'+d60+' dos '+a.total+' não acessam há mais de 60 dias.</div></div>';
+  const rec=a.funil['Recompra']||0;
+  if(rec>0)h2+='<div class="ins ok"><div class="ins-t">✅ Recompra: '+fmtP(a.total>0?rec/a.total*100:0)+'</div><div class="ins-p">'+rec+' alunos com progresso ≥70%.</div></div>';
+  if(avgProg<10)h2+='<div class="ins w"><div class="ins-t">🚨 Progresso baixo: '+fmtP(avgProg)+'</div><div class="ins-p">Ações de engajamento urgentes necessárias.</div></div>';
+  h2+='</div>';
+  document.getElementById('contentEngajamento').innerHTML=h2;
+
+  // ========== TAB 3: FINANCEIRO ==========
+  let h3='';
+  h3+='<div class="sec">💰 Financeiro</div><div class="g5">';
+  h3+='<div class="fin"><div class="fin-icon">💳</div><div class="fin-val" style="color:var(--green)">'+fmtR(f.compras_v)+'</div><div class="fin-label">Receita de Vendas</div><div class="fin-sub">'+f.compras_n+' compras</div></div>';
+  h3+='<div class="fin"><div class="fin-icon">📊</div><div class="fin-val" style="color:var(--accent)">'+fmtR(f.compras_v>0?f.compras_v/f.compras_n:0)+'</div><div class="fin-label">Ticket Médio</div><div class="fin-sub">por compra</div></div>';
+  h3+='<div class="fin"><div class="fin-icon">↩️</div><div class="fin-val" style="color:var(--red)">'+fmtR(f.reembolso_v)+'</div><div class="fin-label">Reembolsos</div><div class="fin-sub">'+f.reembolso_n+' · '+fmtP(pctReemb)+'</div></div>';
+  if(f.chargeback_n>0)h3+='<div class="fin"><div class="fin-icon">⚠️</div><div class="fin-val" style="color:var(--orange)">'+fmtR(f.chargeback_v)+'</div><div class="fin-label">Chargebacks</div><div class="fin-sub">'+f.chargeback_n+'</div></div>';
+  if(f.cancelado_n>0)h3+='<div class="fin"><div class="fin-icon">🚫</div><div class="fin-val" style="color:var(--pink)">'+fmtR(f.cancelado_v)+'</div><div class="fin-label">Cancelamentos</div><div class="fin-sub">'+f.cancelado_n+'</div></div>';
+  h3+='</div>';
+
+  h3+='<div class="sec">💎 Faturamento por Produto</div>';
+  const fatByProd={base:0,asc:0,escola:0,neuro:0,tea:0,outro:0};
+  rows.forEach(r=>{
+    if(r[R.VALOR]>0&&(r[R.STATUS_COMPRA]==='COMPLETE'||r[R.STATUS_COMPRA]==='APPROVED')){
+      const pk=normProd(r[R.PRODUTO]);
+      fatByProd[pk]+=r[R.VALOR];
+    }
+  });
+  const fatTotal=Object.values(fatByProd).reduce((a,b)=>a+b,0);
+  h3+='<div class="g2"><div class="card"><h3>Representatividade de Faturamento</h3><div class="d">Receita por produto</div><div class="donut-area">'+multiSegmentDonut(fatByProd,prodColors,'Total: '+fmtR(fatTotal))+'</div></div>';
+  h3+='<div class="card"><h3>Detalhamento por Produto</h3><div class="d">Comparativo de receita</div><div class="hbar-area" style="height:auto;gap:24px">';
+  const mxFat=Math.max(...Object.values(fatByProd),1);
+  const prodLabels2={base:'Psicanálise Contemporânea',asc:'Mentoria no Divã',escola:'Escola para Pais',neuro:'Neurociência',tea:'TEA/TDAH',outro:'Outro'};
+  ['base','asc','escola','neuro','tea','outro'].forEach(pk=>{
+    if(fatByProd[pk]){
+      const pct=fatTotal>0?fatByProd[pk]/fatTotal*100:0;
+      h3+='<div class="hbar-row"><span class="hbar-lbl">'+prodLabels2[pk]+'</span><div class="hbar-track"><div class="hbar-fill" style="width:'+Math.round(fatByProd[pk]/mxFat*100)+'%;background:'+prodColors[pk];overflow:visible;white-space:nowrap;min-width:fit-content;padding-right:12px+'">'+fmtR(fatByProd[pk])+' ('+fmtP(pct)+')</div></div></div>';
+    }
+  });
+  h3+='</div></div></div>';
+
+  // Compras vs Perdas
+  const mxFin=Math.max(f.compras_v,perda,1);
+  h3+='<div class="g2" style="margin-top:24px"><div class="card"><h3>Compras vs Perdas</h3><div class="d">Comparativo financeiro</div><div class="chart"><div class="chart-bars"><div class="bar" style="height:95%;background:var(--green);flex:2"><span class="tt">Vendas: '+fmtR(f.compras_v)+'</span></div><div class="bar" style="height:'+Math.round(perda/mxFin*95)+'%;background:var(--red);flex:1"><span class="tt">Perdas: '+fmtR(perda)+'</span></div></div><div class="chart-labels"><div class="chart-lbl" style="flex:2">Vendas ('+fmtR(f.compras_v)+')</div><div class="chart-lbl" style="flex:1">Perdas ('+fmtR(perda)+')</div></div></div></div>';
+  h3+='<div class="card"><h3>Status Transações</h3><div class="d">Distribuição</div><div class="hbar-area"><div class="hbar-row"><span class="hbar-lbl">Aprovadas</span><div class="hbar-track"><div class="hbar-fill" style="width:'+(ttx>0?Math.round(f.compras_n/ttx*100):0)+'%;background:var(--green)">'+f.compras_n+'</div></div></div><div class="hbar-row"><span class="hbar-lbl">Reembolsos</span><div class="hbar-track"><div class="hbar-fill" style="width:'+(ttx>0?Math.max(Math.round(f.reembolso_n/ttx*100),2):0)+'%;background:var(--red)">'+f.reembolso_n+'</div></div></div></div></div></div>';
+
+  // Reembolso tendência (period-relative)
+  h3+='<div class="sec">📉 Reembolso — Tendência</div><div class="g3">';
+  [[a.vend30,a.reemb30,'30 dias','var(--green)'],[a.vend60,a.reemb60,'60 dias','var(--gold)'],[a.vend90,a.reemb90,'90 dias','var(--red)']].forEach(([vend,rb,label,color])=>{
+    const pctReembPeriod=vend.v>0?rd(rb.v/vend.v*100):0;
+    h3+='<div class="trend-card" style="border-top:4px solid '+color+'"><div style="font-size:14px;font-weight:600;color:var(--t2)">Últimos '+label+'</div><div style="font-size:13px;color:var(--t3)">neste período</div><div style="font-size:13px;margin:8px 0;color:var(--t2)">Vendas: '+fmtR(vend.v)+' ('+vend.n+')</div><div class="trend-val" style="color:'+color+'">'+rb.n+'</div><div class="trend-money" style="color:'+color+'">'+fmtR(rb.v)+'</div><span class="trend-pct" style="background:'+color+'22;color:'+color+'">'+fmtP(pctReembPeriod)+' do período</span></div>';
+  });h3+='</div>';
+
+  // Cross-sell (ALWAYS visible - use RAW_DATA)
+  const csEscola=calcCrossSell('escola');
+  const csNeuro=calcCrossSell('neuro');
+  const csTea=calcCrossSell('tea');
+  h3+='<div class="sec">🔄 Oportunidade entre Produtos</div>';
+  h3+='<div class="g2">';
+  h3+='<div class="rc"><h3>Escola para Pais → Mentoria <span class="rc-badge conv">Conversão</span></h3>';
+  h3+='<div class="rc-row"><span class="rc-l">Alunos Escola que compraram Mentoria</span><span class="rc-v" style="color:var(--teal)">'+csEscola.n+'</span></div>';
+  h3+='<div class="rc-row"><span class="rc-l">% de cross-sell</span><span class="rc-v" style="color:var(--teal)">'+fmtP(csEscola.srcT>0?rd(csEscola.n/csEscola.srcT*100):0)+'</span></div>';
+  h3+='<div class="rc-potencial"><span class="rc-l">Potencial restante</span><span class="rc-v" style="color:var(--gold)">'+fmtN(csEscola.pot)+' <small style="font-size:12px;font-weight:400;color:var(--t2)">('+fmtP(csEscola.pctP)+')</small></span></div></div>';
+  h3+='<div class="rc"><h3>Neurociência → Mentoria <span class="rc-badge conv">Conversão</span></h3>';
+  h3+='<div class="rc-row"><span class="rc-l">Alunos Neuro que compraram Mentoria</span><span class="rc-v" style="color:var(--teal)">'+csNeuro.n+'</span></div>';
+  h3+='<div class="rc-row"><span class="rc-l">% de cross-sell</span><span class="rc-v" style="color:var(--teal)">'+fmtP(csNeuro.srcT>0?rd(csNeuro.n/csNeuro.srcT*100):0)+'</span></div>';
+  h3+='<div class="rc-potencial"><span class="rc-l">Potencial restante</span><span class="rc-v" style="color:var(--gold)">'+fmtN(csNeuro.pot)+' <small style="font-size:12px;font-weight:400;color:var(--t2)">('+fmtP(csNeuro.pctP)+')</small></span></div></div>';
+  h3+='</div><div class="g2" style="margin-top:16px">';
+  h3+='<div class="rc"><h3>TEA/TDAH → Mentoria <span class="rc-badge conv">Conversão</span></h3>';
+  h3+='<div class="rc-row"><span class="rc-l">Alunos TEA que compraram Mentoria</span><span class="rc-v" style="color:var(--teal)">'+csTea.n+'</span></div>';
+  h3+='<div class="rc-row"><span class="rc-l">% de cross-sell</span><span class="rc-v" style="color:var(--teal)">'+fmtP(csTea.srcT>0?rd(csTea.n/csTea.srcT*100):0)+'</span></div>';
+  h3+='<div class="rc-potencial"><span class="rc-l">Potencial restante</span><span class="rc-v" style="color:var(--gold)">'+fmtN(csTea.pot)+' <small style="font-size:12px;font-weight:400;color:var(--t2)">('+fmtP(csTea.pctP)+')</small></span></div></div>';
+  h3+='</div>';
+
+  // Insights Financeiro
+  h3+='<div class="sec">💡 Insights — Financeiro</div><div class="ins-g">';
+  if(a.reemb30.n===0)h3+='<div class="ins ok"><div class="ins-t">✅ 0 reembolsos nos últimos 30 dias</div><div class="ins-p">Tendência estável.</div></div>';
+  else h3+='<div class="ins w"><div class="ins-t">⚠️ '+a.reemb30.n+' reembolso(s) nos últimos 30 dias</div><div class="ins-p">'+fmtR(a.reemb30.v)+' de impacto recente.</div></div>';
+  if(pctReemb>15)h3+='<div class="ins w"><div class="ins-t">🚨 Reembolso: '+fmtP(pctReemb)+'</div><div class="ins-p">'+f.reembolso_n+' reembolsos · '+fmtR(f.reembolso_v)+' de impacto.</div></div>';
+  if(csBase.pctP>50)h3+='<div class="ins i"><div class="ins-t">⚡ '+fmtP(csBase.pctP)+' da base ainda não comprou Mentoria</div><div class="ins-p">'+fmtN(csBase.pot)+' alunos potenciais para cross-sell.</div></div>';
+  h3+='</div>';
+
+  document.getElementById('contentFinanceiro').innerHTML=h3;
+}
+
+function loadData(url){
+  url=url||API_URL;
+  if(!url){
+    alert('Sem URL de API. Usando dados de exemplo (vazio).');
+    RAW_DATA=[];TODAY_MS=new Date().getTime();
+    buildMS('fProduto',[]);
+    buildMS('fStatusCompra',['COMPLETE','APPROVED','REFUNDED','CHARGEBACK','CANCELLED']);
+    buildMS('fStatusClub',['ACTIVE','BLOCKED','BLOCKED_BY_OWNER']);
+    renderAll([]);
+    return;
+  }
+  fetch(url).then(r=>r.json()).then(d=>{
+    RAW_DATA=d||[];TODAY_MS=new Date().getTime();
+    const prods=new Set(),statuses=new Set(),statusC=new Set();
+    RAW_DATA.forEach(r=>{if(r[R.PRODUTO])prods.add(r[R.PRODUTO]);if(r[R.STATUS_COMPRA])statuses.add(r[R.STATUS_COMPRA]);if(r[R.STATUS_CLUB])statusC.add(r[R.STATUS_CLUB]);});
+    buildMS('fProduto',[...prods].sort());
+    buildMS('fStatusCompra',[...statuses].sort());
+    buildMS('fStatusClub',[...statusC].sort());
+    renderAll(RAW_DATA);
+  }).catch(e=>{alert('Erro ao carregar: '+e.message);console.error(e);});
+}
+</script>
+</body>
+</html>
