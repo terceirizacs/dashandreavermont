@@ -256,6 +256,23 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .footer{text-align:center;padding:40px;font-size:14px;color:var(--t3);border-top:1px solid var(--border);margin-top:32px}
 .footer strong{color:var(--a2)}
 
+.nps-info-btn{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--border);color:var(--t2);font-size:13px;font-weight:700;cursor:pointer;margin-left:8px;border:1px solid var(--border);transition:all .2s;vertical-align:middle;font-family:'JetBrains Mono'}
+.nps-info-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.nps-info-modal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);align-items:center;justify-content:center}
+.nps-info-modal.show{display:flex}
+.nps-info-box{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:40px;max-width:620px;width:92%;max-height:80vh;overflow-y:auto;box-shadow:0 24px 80px var(--shadow)}
+.nps-info-box h3{color:var(--accent);margin-bottom:16px;font-size:20px}
+.nps-info-box p{color:var(--t2);font-size:14px;line-height:1.7;margin-bottom:12px}
+.nps-info-box .formula{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:20px;font-family:'JetBrains Mono';font-size:14px;color:var(--accent);text-align:center;margin:16px 0}
+.nps-info-box .zones{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.nps-info-box .zone{padding:12px 16px;border-radius:10px;font-size:13px;font-weight:600}
+.nps-info-close{background:var(--accent);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-family:'Outfit';font-weight:600;cursor:pointer;margin-top:16px}
+.nps-cat-bar{display:flex;align-items:center;gap:10px;margin:8px 0;position:relative}
+.nps-cat-lbl{min-width:200px;font-size:12px;color:var(--t2);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nps-cat-track{flex:1;height:32px;background:var(--border);border-radius:8px;overflow:hidden;position:relative;cursor:pointer}
+.nps-cat-fill{height:100%;border-radius:8px;display:flex;align-items:center;padding:0 10px;font-size:11px;font-weight:600;color:#fff;white-space:nowrap;transition:width .5s ease}
+.nps-cat-pct{font-size:12px;color:var(--t2);min-width:50px;font-family:'JetBrains Mono'}
+
 .nps-gauge{position:relative;width:220px;height:120px;margin:0 auto 16px}
 .nps-gauge-bg{fill:none;stroke:var(--border);stroke-width:18;stroke-linecap:round}
 .nps-gauge-fill{fill:none;stroke-width:18;stroke-linecap:round;transition:stroke-dashoffset .8s ease}
@@ -781,12 +798,32 @@ function renderNPS(){
   const pPass=scores.length>0?rd(passives/scores.length*100):0;
   const pDetr=scores.length>0?rd(detractors/scores.length*100):0;
 
+  // helper bar with tooltip
+  function catBar(lbl,cnt,mx,color,pct){
+    return'<div class="nps-cat-bar"><span class="nps-cat-lbl">'+lbl+'</span><div class="nps-cat-track"><div class="nps-cat-fill" style="width:'+Math.max(Math.round(cnt/mx*100),3)+'%;background:'+color+'"><span class="tt">'+lbl+': '+cnt+' respostas ('+fmtP(pct)+')</span>'+cnt+'</div></div><span class="nps-cat-pct">'+fmtP(pct)+'</span></div>';
+  }
+
   let h='';
+
+  // NPS Info Modal
+  h+='<div class="nps-info-modal" id="npsInfoModal" onclick="if(event.target===this)this.classList.remove(\'show\')"><div class="nps-info-box">';
+  h+='<h3>O que é o NPS?</h3>';
+  h+='<p>O <strong>Net Promoter Score (NPS)</strong> é uma métrica criada por Fred Reichheld (Bain & Company) para medir a lealdade e satisfação dos clientes com base em uma única pergunta: "Em uma escala de 0 a 10, qual a probabilidade de você recomendar nosso produto/serviço?"</p>';
+  h+='<p>Os respondentes são classificados em 3 grupos:</p>';
+  h+='<div class="zones"><div class="zone" style="background:rgba(52,211,153,.15);color:var(--green)"><strong>Promotores (9-10)</strong><br>Entusiastas leais que continuarão comprando e indicando</div>';
+  h+='<div class="zone" style="background:rgba(251,191,36,.15);color:var(--gold)"><strong>Neutros (7-8)</strong><br>Satisfeitos mas não entusiasmados, vulneráveis a concorrência</div>';
+  h+='<div class="zone" style="background:rgba(248,113,113,.15);color:var(--red)"><strong>Detratores (0-6)</strong><br>Insatisfeitos que podem prejudicar a marca com boca-a-boca negativo</div>';
+  h+='<div class="zone" style="background:rgba(139,124,247,.15);color:var(--accent)"><strong>Fórmula</strong><br>NPS = % Promotores − % Detratores</div></div>';
+  h+='<div class="formula">NPS = (Promotores ÷ Total × 100) − (Detratores ÷ Total × 100)</div>';
+  h+='<p><strong>Escalas de referência:</strong></p>';
+  h+='<p>• <strong style="color:var(--red)">-100 a 0</strong> → Zona Crítica<br>• <strong style="color:var(--gold)">1 a 49</strong> → Zona de Aperfeiçoamento<br>• <strong style="color:var(--teal)">50 a 74</strong> → Zona de Qualidade<br>• <strong style="color:var(--green)">75 a 100</strong> → Zona de Excelência</p>';
+  h+='<button class="nps-info-close" onclick="document.getElementById(\'npsInfoModal\').classList.remove(\'show\')">Entendi</button>';
+  h+='</div></div>';
 
   // KPIs
   h+='<div class="kpis">';
-  h+=kpiCard('linear-gradient(90deg,var(--accent),var(--a2))','NPS Score',nps>0?'+'+nps:String(nps),'de -100 a +100',nps>=50?'var(--green)':nps>=0?'var(--gold)':'var(--red)');
-  h+=kpiCard('linear-gradient(90deg,var(--teal),var(--green))','Total Respostas',fmtN(total),'','var(--teal)');
+  h+=kpiCard('linear-gradient(90deg,var(--accent),var(--a2))','NPS Score <span class="nps-info-btn" onclick="event.stopPropagation();document.getElementById(\'npsInfoModal\').classList.add(\'show\')">?</span>',nps>0?'+'+nps:String(nps),'de -100 a +100',nps>=50?'var(--green)':nps>=0?'var(--gold)':'var(--red)');
+  h+=kpiCard('linear-gradient(90deg,var(--teal),var(--green))','Total Respostas',fmtN(total),'responderam a pesquisa','var(--teal)');
   h+=kpiCard('linear-gradient(90deg,var(--green),var(--teal))','Promotores (9-10)',fmtN(promoters),fmtP(pProm)+' do total','var(--green)');
   h+=kpiCard('linear-gradient(90deg,var(--red),var(--pink))','Detratores (0-6)',fmtN(detractors),fmtP(pDetr)+' do total','var(--red)');
   h+='</div>';
@@ -815,207 +852,258 @@ function renderNPS(){
   const mxS=Math.max(...Object.values(scoreDist),1);
   h+='<div class="card"><h3>Notas de 0 a 10</h3><div class="d">Frequência de cada nota</div><div class="nps-score-dist">';
   for(let i=0;i<=10;i++){
-    const cnt=scoreDist[i];const hh=Math.round(cnt/mxS*120);
+    const cnt=scoreDist[i];const hh=Math.round(cnt/mxS*120);const pc=scores.length>0?rd(cnt/scores.length*100):0;
     const col=i>=9?'var(--green)':i>=7?'var(--gold)':'var(--red)';
-    h+='<div class="nps-score-col"><div class="nps-score-cnt">'+cnt+'</div><div class="nps-score-bar" style="height:'+Math.max(hh,4)+'px;background:'+col+'"></div><div class="nps-score-num">'+i+'</div></div>';
+    h+='<div class="nps-score-col" style="cursor:pointer"><span class="tt">Nota '+i+': '+cnt+' respostas ('+fmtP(pc)+')</span><div class="nps-score-cnt">'+cnt+'</div><div class="nps-score-bar" style="height:'+Math.max(hh,4)+'px;background:'+col+'"></div><div class="nps-score-num">'+i+'</div></div>';
   }
   h+='</div></div>';
 
   // Monthly evolution
   const monthly={};
-  d.forEach(r=>{
-    if(r[1]){
-      const dt=new Date(r[1]);
-      const key=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0');
-      if(!monthly[key])monthly[key]={sum:0,cnt:0};
-      monthly[key].sum+=r[0];monthly[key].cnt++;
-    }
-  });
+  d.forEach(r=>{if(r[1]){const dt=new Date(r[1]);const key=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0');if(!monthly[key])monthly[key]={sum:0,cnt:0};monthly[key].sum+=r[0];monthly[key].cnt++;}});
   const mKeys=Object.keys(monthly).sort();
   if(mKeys.length>0){
     const mxCnt=Math.max(...mKeys.map(k=>monthly[k].cnt),1);
     h+='<div class="card"><h3>Evolução Mensal</h3><div class="d">Respostas e média por mês</div><div class="nps-evo">';
+    const monthNames=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
     mKeys.forEach(k=>{
       const m=monthly[k];const avg2=rd(m.sum/m.cnt);const hh=Math.round(m.cnt/mxCnt*130);
-      const parts=k.split('-');const monthNames=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-      const lbl=monthNames[parseInt(parts[1])-1]+'/'+parts[0].slice(2);
-      h+='<div class="nps-evo-col"><div class="nps-evo-val">'+avg2.toFixed(1).replace('.',',')+'</div><div class="nps-evo-bar" style="height:'+Math.max(hh,8)+'px"></div><div class="nps-evo-lbl">'+lbl+'</div><div class="nps-evo-cnt">'+m.cnt+' resp.</div></div>';
+      const parts=k.split('-');const lbl=monthNames[parseInt(parts[1])-1]+'/'+parts[0].slice(2);
+      h+='<div class="nps-evo-col" style="cursor:pointer"><span class="tt">'+lbl+': '+m.cnt+' respostas · Média: '+avg2.toFixed(1).replace('.',',')+'</span><div class="nps-evo-val">'+avg2.toFixed(1).replace('.',',')+'</div><div class="nps-evo-bar" style="height:'+Math.max(hh,8)+'px"></div><div class="nps-evo-lbl">'+lbl+'</div><div class="nps-evo-cnt">'+m.cnt+' resp.</div></div>';
     });
     h+='</div></div>';
   }
   h+='</div>';
 
-  // Demographic profile
+  // ========== PERFIL DOS RESPONDENTES (COMPLETO) ==========
   h+='<div class="sec">👥 Perfil dos Respondentes</div>';
-  // Gender
-  const genero={};d.forEach(r=>{if(r[2])genero[r[2]]=(genero[r[2]]||0)+1;});
-  const age={};d.forEach(r=>{if(r[3])age[r[3]]=(age[r[3]]||0)+1;});
-  const objetivo={};d.forEach(r=>{if(r[4])objetivo[r[4]]=(objetivo[r[4]]||0)+1;});
-  const renda={};d.forEach(r=>{if(r[5])renda[r[5]]=(renda[r[5]]||0)+1;});
+  const genero={},age={},objetivo={},renda={},civil={},filhos={},formatos={};
+  d.forEach(r=>{
+    if(r[2])genero[r[2]]=(genero[r[2]]||0)+1;
+    if(r[3])age[r[3]]=(age[r[3]]||0)+1;
+    if(r[4])objetivo[r[4]]=(objetivo[r[4]]||0)+1;
+    if(r[5])renda[r[5]]=(renda[r[5]]||0)+1;
+    if(r[17])civil[r[17]]=(civil[r[17]]||0)+1;
+    if(r[18])filhos[r[18]]=(filhos[r[18]]||0)+1;
+    if(r[19])r[19].toString().split(',').forEach(v=>{const t=v.trim();if(t)formatos[t]=(formatos[t]||0)+1;});
+  });
 
+  // Row 1: Gender + Age
   h+='<div class="g2">';
-  // Gender donut
   const genKeys=Object.keys(genero).sort((a,b)=>genero[b]-genero[a]);
   const genTotal=genKeys.reduce((s,k)=>s+genero[k],0);
-  const genColors=['var(--pink)','var(--accent)','var(--t3)'];
+  const genColors=['var(--pink)','var(--accent)','var(--sky)','var(--t3)'];
   let genConic='',genDeg=0,genLeg='';
-  genKeys.forEach((k,i)=>{const pc=genero[k]/genTotal*100;const dd=Math.round(pc/100*360);genConic+=(i>0?',':'')+genColors[i%3]+' '+genDeg+'deg '+(genDeg+dd)+'deg';genLeg+='<span><i style="background:'+genColors[i%3]+'"></i>'+k+' ('+genero[k]+')</span>';genDeg+=dd;});
-  h+='<div class="card"><h3>Gênero</h3><div class="d">Distribuição</div><div class="donut-area"><div class="donut-ring" style="background:conic-gradient('+genConic+')"><div style="width:120px;height:120px;background:var(--donut-hole);border-radius:50%;display:flex;align-items:center;justify-content:center"><div class="donut-center"><div class="donut-v" style="color:var(--pink)">'+fmtP(genTotal>0?genero[genKeys[0]]/genTotal*100:0)+'</div><div class="donut-lbl">'+genKeys[0]+'</div></div></div></div><div class="donut-legend">'+genLeg+'</div></div></div>';
-
-  // Age bars
+  genKeys.forEach((k,i)=>{const pc=genero[k]/genTotal*100;const dd=Math.round(pc/100*360);genConic+=(i>0?',':'')+genColors[i%4]+' '+genDeg+'deg '+(genDeg+dd)+'deg';genLeg+='<span><i style="background:'+genColors[i%4]+'"></i>'+k+' ('+genero[k]+' · '+fmtP(pc)+')</span>';genDeg+=dd;});
+  h+='<div class="card"><h3>Gênero</h3><div class="d">Distribuição</div><div class="donut-area"><div class="donut-ring" style="background:conic-gradient('+genConic+')"><span class="tt">'+genKeys.map(k=>k+': '+genero[k]+' ('+fmtP(genero[k]/genTotal*100)+')').join(' · ')+'</span><div style="width:120px;height:120px;background:var(--donut-hole);border-radius:50%;display:flex;align-items:center;justify-content:center"><div class="donut-center"><div class="donut-v" style="color:var(--pink)">'+fmtP(genTotal>0?genero[genKeys[0]]/genTotal*100:0)+'</div><div class="donut-lbl">'+genKeys[0]+'</div></div></div></div><div class="donut-legend">'+genLeg+'</div></div></div>';
   const ageOrder=['Menos de 25 anos','25 a 34 anos','35 a 44 anos','45 a 54 anos','55 a 64 anos','Acima de 65 anos'];
   const mxAge=Math.max(...ageOrder.map(k=>age[k]||0),1);
   const ageColors=['var(--sky)','var(--cyan)','var(--teal)','var(--accent)','var(--a2)','var(--gold)'];
   h+='<div class="card"><h3>Faixa Etária</h3><div class="d">Distribuição por idade</div>';
-  ageOrder.forEach((k,i)=>{
-    const cnt=age[k]||0;const pct=total>0?rd(cnt/total*100):0;const w=Math.max(Math.round(cnt/mxAge*100),2);
-    h+='<div class="nps-bar-h"><span class="nps-bar-lbl">'+k+'</span><div class="nps-bar-track"><div class="nps-bar-fill" style="width:'+w+'%;background:'+ageColors[i]+'">'+cnt+' ('+fmtP(pct)+')</div></div></div>';
-  });
+  ageOrder.forEach((k,i)=>{const cnt=age[k]||0;const pc=total>0?rd(cnt/total*100):0;h+=catBar(k,cnt,mxAge,ageColors[i],pc);});
   h+='</div></div>';
 
-  // Objective & Income
+  // Row 2: Estado Civil + Filhos
+  h+='<div class="g2">';
+  const civKeys=Object.keys(civil).sort((a,b)=>civil[b]-civil[a]);
+  const mxCiv=Math.max(...civKeys.map(k=>civil[k]),1);
+  const civColors=['var(--pink)','var(--accent)','var(--gold)','var(--teal)','var(--t3)'];
+  h+='<div class="card"><h3>Estado Civil</h3><div class="d">Distribuição</div>';
+  civKeys.forEach((k,i)=>{const cnt=civil[k];const pc=total>0?rd(cnt/total*100):0;h+=catBar(k,cnt,mxCiv,civColors[i%5],pc);});
+  h+='</div>';
+  // Filhos donut
+  const filKeys=Object.keys(filhos).sort((a,b)=>filhos[b]-filhos[a]);
+  const filTotal=filKeys.reduce((s,k)=>s+filhos[k],0);
+  const filSim=filhos['Sim']||0;const filNao=filhos['Não']||filhos['Nao']||0;
+  const pSim=filTotal>0?rd(filSim/filTotal*100):0;const degFil=Math.round(pSim/100*360);
+  h+='<div class="card"><h3>Tem Filhos?</h3><div class="d">Distribuição</div><div class="donut-area">';
+  h+=donutHTML('var(--teal)',degFil,'var(--orange)',fmtP(pSim),'sim','Sim: '+filSim+' ('+fmtP(pSim)+') · Não: '+filNao+' ('+fmtP(100-pSim)+')','Sim',fmtN(filSim),'var(--teal)','Não',fmtN(filNao),'var(--orange)');
+  h+='</div></div></div>';
+
+  // Row 3: Objective + Income
   h+='<div class="g2">';
   const objKeys=Object.keys(objetivo).sort((a,b)=>objetivo[b]-objetivo[a]);
   const mxObj=Math.max(...objKeys.map(k=>objetivo[k]),1);
   const objColors=['var(--accent)','var(--teal)','var(--gold)','var(--pink)'];
   h+='<div class="card"><h3>Objetivo Principal</h3><div class="d">Por que estão fazendo o curso</div>';
-  objKeys.forEach((k,i)=>{
-    const cnt=objetivo[k];const pct=total>0?rd(cnt/total*100):0;const w=Math.max(Math.round(cnt/mxObj*100),2);
-    const short=k.split(':')[0];
-    h+='<div class="nps-bar-h"><span class="nps-bar-lbl">'+short+'</span><div class="nps-bar-track"><div class="nps-bar-fill" style="width:'+w+'%;background:'+objColors[i%4]+'">'+cnt+' ('+fmtP(pct)+')</div></div></div>';
-  });
+  objKeys.forEach((k,i)=>{const cnt=objetivo[k];const pc=total>0?rd(cnt/total*100):0;const short=k.length>50?k.substring(0,47)+'...':k;h+=catBar(short,cnt,mxObj,objColors[i%4],pc);});
   h+='</div>';
-
   const rendaOrder=['Até R$ 2.000,00','R$ 2.001 a R$ 4.000','R$ 4.001 a R$ 8.000','R$ 8.001 a R$ 15.000','R$ 15.001 a R$ 25.000','Acima de R$ 25.000','Prefiro não informar'];
   const mxRenda=Math.max(...rendaOrder.map(k=>renda[k]||0),1);
   const rendaColors=['var(--red)','var(--orange)','var(--gold)','var(--teal)','var(--green)','var(--accent)','var(--t3)'];
   h+='<div class="card"><h3>Renda Familiar</h3><div class="d">Distribuição por faixa</div>';
-  rendaOrder.forEach((k,i)=>{
-    const cnt=renda[k]||0;const pct=total>0?rd(cnt/total*100):0;const w=Math.max(Math.round(cnt/mxRenda*100),2);
-    h+='<div class="nps-bar-h"><span class="nps-bar-lbl">'+k+'</span><div class="nps-bar-track"><div class="nps-bar-fill" style="width:'+w+'%;background:'+rendaColors[i]+'">'+cnt+' ('+fmtP(pct)+')</div></div></div>';
-  });
+  rendaOrder.forEach((k,i)=>{const cnt=renda[k]||0;const pc=total>0?rd(cnt/total*100):0;h+=catBar(k,cnt,mxRenda,rendaColors[i],pc);});
   h+='</div></div>';
 
-  // Qualitative feedback
+  // Row 4: Formatos de Aprendizagem
+  const fmtKeys=Object.keys(formatos).sort((a,b)=>formatos[b]-formatos[a]);
+  const mxFmt=Math.max(...fmtKeys.map(k=>formatos[k]),1);
+  const fmtColors=['var(--accent)','var(--teal)','var(--green)','var(--gold)','var(--sky)','var(--pink)','var(--orange)'];
+  h+='<div class="card"><h3>Formatos que Mais Ajudam</h3><div class="d">Pode marcar mais de uma opção</div>';
+  fmtKeys.forEach((k,i)=>{const cnt=formatos[k];const pc=total>0?rd(cnt/total*100):0;h+=catBar(k,cnt,mxFmt,fmtColors[i%7],pc);});
+  h+='</div>';
+
+  // ========== AVALIAÇÃO QUALITATIVA ==========
   h+='<div class="sec">📝 Avaliação Qualitativa</div><div class="g2">';
 
-  // Relevance (col 6 = 1-5 scale)
+  // Relevância (1-5) COM percentuais
   const relev={};d.forEach(r=>{if(r[6])relev[r[6]]=(relev[r[6]]||0)+1;});
+  const relevTotal=Object.values(relev).reduce((s,v)=>s+v,0);
   const mxRel=Math.max(...Object.values(relev),1);
-  h+='<div class="card"><h3>Relevância dos Módulos</h3><div class="d">Escala 1 a 5</div><div class="nps-score-dist" style="height:100px">';
-  for(let i=1;i<=5;i++){const cnt=relev[i]||0;const hh=Math.round(cnt/mxRel*85);
-    h+='<div class="nps-score-col"><div class="nps-score-cnt">'+cnt+'</div><div class="nps-score-bar" style="height:'+Math.max(hh,4)+'px;background:var(--accent)"></div><div class="nps-score-num">'+i+'</div></div>';
+  const relevLabels={1:'Nada relevante',2:'Pouco relevante',3:'Razoável',4:'Relevante',5:'Muito relevante'};
+  h+='<div class="card"><h3>Relevância dos Módulos</h3><div class="d">Escala 1 a 5 · '+relevTotal+' respostas</div><div class="nps-score-dist" style="height:100px">';
+  for(let i=1;i<=5;i++){const cnt=relev[i]||0;const hh=Math.round(cnt/mxRel*85);const pc=relevTotal>0?rd(cnt/relevTotal*100):0;
+    h+='<div class="nps-score-col" style="cursor:pointer"><span class="tt">'+relevLabels[i]+': '+cnt+' ('+fmtP(pc)+')</span><div class="nps-score-cnt">'+cnt+'<br><small style="color:var(--accent)">'+fmtP(pc)+'</small></div><div class="nps-score-bar" style="height:'+Math.max(hh,4)+'px;background:var(--accent)"></div><div class="nps-score-num">'+i+'</div></div>';
   }h+='</div></div>';
 
-  // Clarity
+  // Clareza
   const clareza={};d.forEach(r=>{if(r[7])clareza[r[7]]=(clareza[r[7]]||0)+1;});
   const clKeys=Object.keys(clareza).sort((a,b)=>clareza[b]-clareza[a]);
   const mxCl=Math.max(...clKeys.map(k=>clareza[k]),1);
   const clColors=['var(--green)','var(--teal)','var(--gold)','var(--red)'];
   h+='<div class="card"><h3>Clareza dos Conteúdos</h3><div class="d">Como avaliam a clareza</div>';
-  clKeys.forEach((k,i)=>{
-    const cnt=clareza[k];const pct=total>0?rd(cnt/total*100):0;const w=Math.max(Math.round(cnt/mxCl*100),2);
-    h+='<div class="nps-bar-h"><span class="nps-bar-lbl">'+k+'</span><div class="nps-bar-track"><div class="nps-bar-fill" style="width:'+w+'%;background:'+clColors[i%4]+'">'+cnt+' ('+fmtP(pct)+')</div></div></div>';
-  });
+  clKeys.forEach((k,i)=>{const cnt=clareza[k];const pc=total>0?rd(cnt/total*100):0;h+=catBar(k,cnt,mxCl,clColors[i%4],pc);});
   h+='</div></div>';
 
-  // Theory/Practice + Changes
+  // Teoria/Prática + Mudanças
   h+='<div class="g2">';
   const teoria={};d.forEach(r=>{if(r[8])teoria[r[8]]=(teoria[r[8]]||0)+1;});
   const tKeys=Object.keys(teoria).sort((a,b)=>teoria[b]-teoria[a]);
   const mxT=Math.max(...tKeys.map(k=>teoria[k]),1);
   const tColors=['var(--green)','var(--gold)','var(--orange)','var(--red)'];
   h+='<div class="card"><h3>Equilíbrio Teoria e Prática</h3><div class="d">Percepção dos alunos</div>';
-  tKeys.forEach((k,i)=>{
-    const cnt=teoria[k];const pct=total>0?rd(cnt/total*100):0;const w=Math.max(Math.round(cnt/mxT*100),2);
-    h+='<div class="nps-bar-h"><span class="nps-bar-lbl">'+k+'</span><div class="nps-bar-track"><div class="nps-bar-fill" style="width:'+w+'%;background:'+tColors[i%4]+'">'+cnt+' ('+fmtP(pct)+')</div></div></div>';
-  });
+  tKeys.forEach((k,i)=>{const cnt=teoria[k];const pc=total>0?rd(cnt/total*100):0;h+=catBar(k,cnt,mxT,tColors[i%4],pc);});
   h+='</div>';
-
   const mudancas={};d.forEach(r=>{if(r[10])mudancas[r[10]]=(mudancas[r[10]]||0)+1;});
   const muKeys=Object.keys(mudancas).sort((a,b)=>mudancas[b]-mudancas[a]);
   const mxMu=Math.max(...muKeys.map(k=>mudancas[k]),1);
   const muColors=['var(--green)','var(--teal)','var(--gold)','var(--red)'];
   h+='<div class="card"><h3>Mudanças Reais Percebidas</h3><div class="d">Impacto na vida dos alunos</div>';
-  muKeys.forEach((k,i)=>{
-    const cnt=mudancas[k];const pct=total>0?rd(cnt/total*100):0;const w=Math.max(Math.round(cnt/mxMu*100),2);
-    h+='<div class="nps-bar-h"><span class="nps-bar-lbl">'+k+'</span><div class="nps-bar-track"><div class="nps-bar-fill" style="width:'+w+'%;background:'+muColors[i%4]+'">'+cnt+' ('+fmtP(pct)+')</div></div></div>';
-  });
+  muKeys.forEach((k,i)=>{const cnt=mudancas[k];const pc=total>0?rd(cnt/total*100):0;h+=catBar(k,cnt,mxMu,muColors[i%4],pc);});
   h+='</div></div>';
 
-  // Difficulties & Security
+  // Dificuldades + Segurança
   h+='<div class="g2">';
-  const dific={};d.forEach(r=>{if(r[9]){r[9].toString().split(',').forEach(v=>{const t=v.trim();if(t)dific[t]=(dific[t]||0)+1;});}});
-  const dfKeys=Object.keys(dific).sort((a,b)=>dific[b]-dific[a]).slice(0,8);
+  const dific={};d.forEach(r=>{if(r[9])r[9].toString().split(',').forEach(v=>{const t=v.trim();if(t)dific[t]=(dific[t]||0)+1;});});
+  const dfKeys=Object.keys(dific).sort((a,b)=>dific[b]-dific[a]).slice(0,10);
   const mxDf=Math.max(...dfKeys.map(k=>dific[k]),1);
-  h+='<div class="card"><h3>Principais Dificuldades</h3><div class="d">O que dificulta o avanço</div>';
-  dfKeys.forEach((k,i)=>{
-    const cnt=dific[k];const pct=total>0?rd(cnt/total*100):0;const w=Math.max(Math.round(cnt/mxDf*100),2);
-    h+='<div class="nps-bar-h"><span class="nps-bar-lbl">'+k+'</span><div class="nps-bar-track"><div class="nps-bar-fill" style="width:'+w+'%;background:var(--orange)">'+cnt+' ('+fmtP(pct)+')</div></div></div>';
-  });
+  h+='<div class="card"><h3>Principais Dificuldades</h3><div class="d">O que dificulta o avanço (múltipla escolha)</div>';
+  dfKeys.forEach(k=>{const cnt=dific[k];const pc=total>0?rd(cnt/total*100):0;h+=catBar(k,cnt,mxDf,'var(--orange)',pc);});
   h+='</div>';
-
   const seguro={};d.forEach(r=>{if(r[11])seguro[r[11]]=(seguro[r[11]]||0)+1;});
   const sgKeys=Object.keys(seguro).sort((a,b)=>seguro[b]-seguro[a]);
   const mxSg=Math.max(...sgKeys.map(k=>seguro[k]),1);
   const sgColors=['var(--green)','var(--teal)','var(--gold)','var(--red)'];
   h+='<div class="card"><h3>Segurança para Aplicar</h3><div class="d">Nível de confiança dos alunos</div>';
-  sgKeys.forEach((k,i)=>{
-    const cnt=seguro[k];const pct=total>0?rd(cnt/total*100):0;const w=Math.max(Math.round(cnt/mxSg*100),2);
-    h+='<div class="nps-bar-h"><span class="nps-bar-lbl">'+k+'</span><div class="nps-bar-track"><div class="nps-bar-fill" style="width:'+w+'%;background:'+sgColors[i%4]+'">'+cnt+' ('+fmtP(pct)+')</div></div></div>';
-  });
+  sgKeys.forEach((k,i)=>{const cnt=seguro[k];const pc=total>0?rd(cnt/total*100):0;h+=catBar(k,cnt,mxSg,sgColors[i%4],pc);});
   h+='</div></div>';
 
-  // Open-ended word clouds
-  h+='<div class="sec">💬 Respostas Abertas — Palavras-chave</div>';
+  // ========== RESPOSTAS ABERTAS — CATEGORIAS SEMÂNTICAS ==========
+  h+='<div class="sec">💬 Respostas Abertas — Análise Categórica</div>';
 
-  function wordFreq(texts,n){
-    const stop=new Set(['que','com','para','por','uma','por','tem','mais','como','não','muito','mas','ela','dos','das','nos','nas','seu','sua','são','foi','bem','ser','ter','meu','minha','esse','essa','isso','este','esta','está','estou','todo','toda','todos','todas','sim','ainda','pode','vou','sei','tenho','pra','nao','enquanto','sobre','sem','cada','aqui','mim','nos','tinha','foram','dele','dela','deles','delas','também','entre','até','quando','onde','quem','qual','nada','algo','curso','momento','acho','responder']);
-    const freq={};
-    texts.forEach(t=>{if(!t)return;t.toString().toLowerCase().replace(/[^a-záàâãéèêíïóôõöúüç\s]/g,'').split(/\s+/).forEach(w=>{if(w.length>=4&&!stop.has(w))freq[w]=(freq[w]||0)+1;});});
-    return Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,n);
-  }
-  const openFields=[
-    {idx:12,title:'O que mais GOSTA no curso',color:'var(--green)'},
-    {idx:13,title:'O que influenciou a nota',color:'var(--accent)'},
-    {idx:14,title:'O que poderia MELHORAR',color:'var(--orange)'},
-    {idx:15,title:'Gostaria de APRENDER',color:'var(--gold)'}
-  ];
-  h+='<div class="g2">';
-  openFields.forEach(f=>{
-    const texts=d.map(r=>r[f.idx]).filter(Boolean);
-    const words=wordFreq(texts,12);
-    const mxW=words.length>0?words[0][1]:1;
-    h+='<div class="card"><h3>'+f.title+'</h3><div class="d">'+texts.length+' respostas</div><div class="word-cloud">';
-    words.forEach(([w,c])=>{
-      const sz=Math.max(12,Math.round(c/mxW*22));
-      h+='<div class="word-tag" style="font-size:'+sz+'px;border-color:'+f.color+'40;color:'+f.color+'">'+w+' <small style="opacity:.6;font-size:11px">'+c+'</small></div>';
+  function classifyTexts(texts,rules){
+    const cats={};
+    texts.forEach(t=>{const tl=t.toLowerCase();
+      rules.forEach(([name,keywords])=>{
+        if(keywords.some(w=>tl.includes(w)))cats[name]=(cats[name]||0)+1;
+      });
     });
-    h+='</div></div>';
+    return Object.entries(cats).sort((a,b)=>b[1]-a[1]);
+  }
+
+  const gostaTexts=d.map(r=>r[12]).filter(Boolean);
+  const inflTexts=d.map(r=>r[13]).filter(Boolean);
+  const melhorTexts=d.map(r=>r[14]).filter(Boolean);
+  const aprendTexts=d.map(r=>r[15]).filter(Boolean);
+
+  const gostaRules=[
+    ['Clareza e simplicidade',['clareza','claro','clara','simples','simplicidade','fácil','facil','fácil compreensão','entendimento','linguagem']],
+    ['Didática da Dra. Andréa',['didática','didatica','forma de ensinar','forma que ensina','forma como','modo de ensinar','jeito de ensinar']],
+    ['Exemplos práticos e casos reais',['exemplo','exemplos','caso','casos','prático','pratico','prática','pratica','aplicação']],
+    ['Qualidade do conteúdo',['conteúdo','conteudo','conteúdos','conteudos','material','módulo','modulo']],
+    ['Satisfação geral',['tudo','perfeito','maravilhos','excelente','fantástic','incrível','amo tudo']],
+    ['Profundidade do conhecimento',['conhecimento','profundidade','profundo','aprofundad','domínio']],
+    ['Humanidade e acolhimento',['humanidade','humana','humano','sensibilidade','acolhimento','carinho','empatia']],
+    ['Aulas gravadas',['aula gravada','aulas gravadas','videoaula','vídeo aula','video aula']],
+    ['Autoconhecimento',['autoconhecimento','auto conhecimento','auto-conhecimento','transformação','transformar']],
+    ['Organização e estrutura',['organização','organizado','estrutura','estruturado']]
+  ];
+
+  const inflRules=[
+    ['Didática excelente',['didática','didatica','forma de ensinar','forma como']],
+    ['Qualidade do conteúdo',['conteúdo','conteudo','conteúdos','material','módulo']],
+    ['Clareza nas explicações',['clareza','claro','clara','simples','fácil','entendimento','compreensão']],
+    ['Nota máxima (satisfação total)',['10','nota 10','nota foi 10','dez']],
+    ['Exemplos e casos práticos',['exemplo','exemplos','caso','casos','prático','prática']],
+    ['Superou expectativas',['expectativa','superou','supera','além','surpreend']],
+    ['Transformação pessoal',['autoconhecimento','transformação','transformar','mudança','mudou']],
+    ['Resultados na prática',['resultado','resultados','aplicar','aplicação','atend']],
+    ['Humanidade da Dra. Andréa',['humanidade','humana','humano','sensibilidade','acolhimento']],
+    ['Estrutura do curso',['estrutura','organização','organizado','bem estruturado']]
+  ];
+
+  const melhorRules=[
+    ['Nada a melhorar (satisfeito)',['nada','perfeito','ótimo','satisfeit','tudo bem','está bem','tá ótimo','não mudaria','está tudo','se melhorar estraga']],
+    ['Mais aulas ao vivo / encontros',['ao vivo','live','encontro','presencial','zoom','meet','interação']],
+    ['Melhorar suporte ao aluno',['suporte','atendimento','comunicação','resposta','retorno']],
+    ['Mais estudos de caso clínico',['caso','casos','clínico','clínicos','estudo de caso']],
+    ['Tempo de acesso / prazo',['tempo','prazo','vitalíci','acesso','renovação']],
+    ['Mais prática e exercícios',['prática','prático','pratica','exercício','aplicar','simulação','role play']],
+    ['Mais supervisão',['supervisão','acompanhamento','feedback','mentoria','orientação']],
+    ['Mais material complementar',['material','pdf','apostila','resumo','complementar']],
+    ['Melhorar plataforma',['plataforma','hotmart','navegação','aplicativo','sistema']],
+    ['Avaliações e certificação',['avaliação','prova','certificado','teste']]
+  ];
+
+  const aprendRules=[
+    ['Satisfeito / sem sugestão',['não','nada','momento','ainda não','completo','satisfeit','não sei','não tenho','sem sugest']],
+    ['Prática clínica / atendimento',['atendimento','clínica','clinica','consultório','sessão','sessao','primeiro cliente','como atender']],
+    ['Neurociência',['neurociência','neurociencia','neuro']],
+    ['Psicossomática / linguagem corporal',['corporal','corpo','psicossomát','somát']],
+    ['Trauma, luto e abuso',['trauma','abuso','narcis','luto','perda']],
+    ['Psicanálise corporativa',['corporativ','empresarial','organizacion','trabalho','rh','nr1']],
+    ['Psicologia infantil / adolescente',['criança','infantil','adolescen','infância','infancia','filho','filhos']],
+    ['Transtornos mentais',['ansiedade','depressão','tag','pânico','transtorno']],
+    ['Terapia de casais',['casal','casais','relacionamento','conjugal']],
+    ['Psicogerontologia',['idoso','geront','envelhecimento','terceira idade']]
+  ];
+
+  const openSections=[
+    {texts:gostaTexts,rules:gostaRules,title:'O que MAIS GOSTA no curso',color:'var(--green)',icon:'💚'},
+    {texts:inflTexts,rules:inflRules,title:'O que INFLUENCIOU a nota',color:'var(--accent)',icon:'⭐'},
+    {texts:melhorTexts,rules:melhorRules,title:'O que poderia MELHORAR',color:'var(--orange)',icon:'🔧'},
+    {texts:aprendTexts,rules:aprendRules,title:'Gostaria de APRENDER',color:'var(--gold)',icon:'📖'}
+  ];
+
+  h+='<div class="g2">';
+  openSections.forEach(s=>{
+    const cats=classifyTexts(s.texts,s.rules);
+    const mx=cats.length>0?cats[0][1]:1;
+    h+='<div class="card"><h3>'+s.icon+' '+s.title+'</h3><div class="d">'+s.texts.length+' respostas analisadas</div>';
+    cats.forEach(([name,cnt])=>{const pc=s.texts.length>0?rd(cnt/s.texts.length*100):0;h+=catBar(name,cnt,mx,s.color,pc);});
+    h+='</div>';
   });
   h+='</div>';
 
-  // Level of knowledge
+  // Nível de conhecimento
   h+='<div class="sec">📚 Nível de Conhecimento Prévio</div>';
   const nivel={};d.forEach(r=>{if(r[16])nivel[r[16]]=(nivel[r[16]]||0)+1;});
   const nvKeys=Object.keys(nivel).sort((a,b)=>nivel[b]-nivel[a]);
   const mxNv=Math.max(...nvKeys.map(k=>nivel[k]),1);
   const nvColors=['var(--sky)','var(--teal)','var(--gold)','var(--accent)'];
   h+='<div class="card"><h3>Nível Antes do Curso</h3><div class="d">Distribuição do conhecimento prévio</div>';
-  nvKeys.forEach((k,i)=>{
-    const cnt=nivel[k];const pct=total>0?rd(cnt/total*100):0;const w=Math.max(Math.round(cnt/mxNv*100),2);
-    const short=k.split(':')[0];
-    h+='<div class="nps-bar-h"><span class="nps-bar-lbl">'+short+'</span><div class="nps-bar-track"><div class="nps-bar-fill" style="width:'+w+'%;background:'+nvColors[i%4]+'">'+cnt+' ('+fmtP(pct)+')</div></div></div>';
-  });
+  nvKeys.forEach((k,i)=>{const cnt=nivel[k];const pc=total>0?rd(cnt/total*100):0;const short=k.length>60?k.substring(0,57)+'...':k;h+=catBar(short,cnt,mxNv,nvColors[i%4],pc);});
   h+='</div>';
 
   // Insights
   h+='<div class="sec">💡 Insights — NPS</div><div class="ins-g">';
-  if(nps>=75)h+='<div class="ins ok"><div class="ins-t">✅ NPS Excelente: +'+nps+'</div><div class="ins-p">Zona de excelência! '+fmtP(pProm)+' são promotores.</div></div>';
+  if(nps>=75)h+='<div class="ins ok"><div class="ins-t">✅ NPS Excelente: +'+nps+'</div><div class="ins-p">Zona de excelência! '+fmtP(pProm)+' são promotores da marca.</div></div>';
   else if(nps>=50)h+='<div class="ins ok"><div class="ins-t">✅ NPS Muito Bom: +'+nps+'</div><div class="ins-p">'+fmtP(pProm)+' promotores. Foco em converter neutros.</div></div>';
   else h+='<div class="ins w"><div class="ins-t">⚠️ NPS precisa de atenção: '+nps+'</div><div class="ins-p">'+detractors+' detratores precisam de acompanhamento.</div></div>';
-  if(pDetr>10)h+='<div class="ins w"><div class="ins-t">🚨 '+fmtP(pDetr)+' detratores</div><div class="ins-p">'+detractors+' alunos deram nota ≤6. Investigar causas.</div></div>';
+  if(pDetr>10)h+='<div class="ins w"><div class="ins-t">🚨 '+fmtP(pDetr)+' detratores</div><div class="ins-p">'+detractors+' alunos deram nota 6 ou menos. Investigar causas.</div></div>';
   if(pProm>80)h+='<div class="ins ok"><div class="ins-t">🌟 '+fmtP(pProm)+' promotores</div><div class="ins-p">Base muito satisfeita — oportunidade de depoimentos e indicações.</div></div>';
+  const topMelhor=classifyTexts(melhorTexts,melhorRules).filter(([n])=>n!=='Nada a melhorar (satisfeito)');
+  if(topMelhor.length>0)h+='<div class="ins i"><div class="ins-t">📋 Principal pedido de melhoria: '+topMelhor[0][0]+'</div><div class="ins-p">'+topMelhor[0][1]+' alunos mencionaram ('+fmtP(rd(topMelhor[0][1]/melhorTexts.length*100))+' das respostas).</div></div>';
   h+='</div>';
 
   document.getElementById('contentNPS').innerHTML=h;
