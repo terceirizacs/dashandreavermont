@@ -395,12 +395,14 @@ const funilBg=['rgba(244,114,182,.12)','rgba(251,146,60,.12)','rgba(251,191,36,.
 const progOrder=['0','1-10','11-20','21-30','31-40','41-50','51-60','61-70','71-80','81-90','91-100'];
 const progColors=['var(--red)','var(--pink)','var(--orange)','var(--gold)','var(--sky)','var(--cyan)','var(--teal)','var(--green)','var(--accent)','var(--a2)','var(--sky)'];
 const tipoColors={'BUYER':'var(--green)','IMPORTED':'var(--accent)','GUEST':'var(--gold)','FREE':'var(--sky)'};
+const prodColors={base:'var(--accent)',asc:'var(--green)',escola:'var(--teal)',neuro:'var(--gold)',tea:'var(--pink)',outro:'var(--t3)'};
 
 let RAW_DATA=null;let TODAY_MS=0;let NPS_DATA=null;
+let CROSS_CACHE=null;let RENDERED_TABS={geral:false,engajamento:false,financeiro:false,nps:false};let CURRENT_TAB='geral';
 
 function doLogin(){const v=document.getElementById('pwdInput').value;if(v===PWD){document.getElementById('loginScreen').style.display='none';loadData();}else{document.getElementById('pwdError').style.display='block';}}
 function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('btnDark').classList.toggle('active',!d);document.getElementById('btnLight').classList.toggle('active',d);}
-function switchTab(tab,btn){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));document.getElementById('tab-'+tab).classList.add('active');btn.classList.add('active');}
+function switchTab(tab,btn){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));document.getElementById('tab-'+tab).classList.add('active');btn.classList.add('active');CURRENT_TAB=tab;if(!RENDERED_TABS[tab]&&RAW_DATA){renderTab(tab);}}
 
 // Multi-select with "Select All"
 function buildMS(id,values){
@@ -421,6 +423,7 @@ async function loadData(){
   try{
     const r=await fetch(API_URL);const d=await r.json();
     if(d.error)throw new Error(d.error);
+    if(d.dict){const dict=d.dict;const dec=i=>typeof i==='number'?dict[i]:i;d.rows.forEach(r=>{r[0]=dec(r[0]);r[1]=dec(r[1]);r[2]=dec(r[2]);r[3]=dec(r[3]);r[4]=dec(r[4]);r[13]=dec(r[13]);});}
     RAW_DATA=d.rows;TODAY_MS=d.todayMs;
     if(d.npsRows)NPS_DATA=d.npsRows;
     document.getElementById('badgeUpdated').textContent='🟢 '+d.atualizado;
@@ -431,8 +434,9 @@ async function loadData(){
     buildMS('fTipoAluno',[...sets.tipoAluno].sort());
     buildMS('fStatusClub',[...sets.statusClub].sort());
     buildMS('fFunil',funilOrder.filter(f=>sets.funilCalc.has(f)));
+    computeCrossCache();
+    RENDERED_TABS={geral:false,engajamento:false,financeiro:false,nps:false};
     renderAll(RAW_DATA);
-    renderNPS();
     document.getElementById('loadingOverlay').style.display='none';
     document.getElementById('mainWrap').style.display='block';
   }catch(e){document.getElementById('loadingOverlay').innerHTML='<div style="color:var(--red);padding:40px;text-align:center;font-size:18px">Erro: '+e.message+'</div>';}
@@ -537,8 +541,37 @@ function multiSegmentDonut(products,colors,tt){
 }
 function kpiCard(bg,label,value,sub,color){return'<div class="kpi"><div class="kpi-bar" style="background:'+bg+'"></div><div class="kpi-l">'+label+'</div><div class="kpi-v" style="color:'+color+'">'+value+'</div>'+(sub?'<div class="kpi-s">'+sub+'</div>':'')+'</div>';}
 
+function computeCrossCache(){
+  const allBase=new Set(),allAsc=new Set(),progAll2={},acessosAll2={},dtAprovAll2={};
+  RAW_DATA.forEach(r=>{
+    if(r[R.EMAIL]){
+      const np=normProd(r[R.PRODUTO]);
+      if(np!=='asc'&&np!=='outro'){allBase.add(r[R.EMAIL]);if(!dtAprovAll2[r[R.EMAIL]])dtAprovAll2[r[R.EMAIL]]={};if(r[R.DT_COMPRA]&&(!dtAprovAll2[r[R.EMAIL]].base||r[R.DT_COMPRA]<dtAprovAll2[r[R.EMAIL]].base))dtAprovAll2[r[R.EMAIL]].base=r[R.DT_COMPRA];}
+      if(np==='asc'){allAsc.add(r[R.EMAIL]);if(!dtAprovAll2[r[R.EMAIL]])dtAprovAll2[r[R.EMAIL]]={};if(r[R.DT_COMPRA])dtAprovAll2[r[R.EMAIL]].asc=r[R.DT_COMPRA];}
+      if(r[R.PROG]!==null){if(!progAll2[r[R.EMAIL]])progAll2[r[R.EMAIL]]={};const np2=np==='asc'?'asc':'base';const prev=progAll2[r[R.EMAIL]][np2];if(prev===undefined||r[R.PROG]>prev)progAll2[r[R.EMAIL]][np2]=r[R.PROG];}
+      if(r[R.QTD_ACESSOS]!==null&&r[R.QTD_ACESSOS]>=0){if(!acessosAll2[r[R.EMAIL]])acessosAll2[r[R.EMAIL]]={};acessosAll2[r[R.EMAIL]][np==='asc'?'asc':'base']=r[R.QTD_ACESSOS];}
+    }
+  });
+  let crossN=0;const crossProgs2=[],crossAcessos2=[],crossDays2=[];
+  allAsc.forEach(e=>{if(allBase.has(e)){crossN++;if(progAll2[e]&&progAll2[e].base!==undefined)crossProgs2.push(progAll2[e].base);if(acessosAll2[e]&&acessosAll2[e].base!==undefined)crossAcessos2.push(acessosAll2[e].base);if(dtAprovAll2[e]&&dtAprovAll2[e].base&&dtAprovAll2[e].asc){const diff=Math.floor((dtAprovAll2[e].asc-dtAprovAll2[e].base)/86400000);if(diff>=0)crossDays2.push(diff);}}});
+  const baseT=allBase.size,ascT=allAsc.size;const avgCross2=crossProgs2.length?rd(avg(crossProgs2)):0;const avgCrossAc2=crossAcessos2.length?rd(avg(crossAcessos2)):0;
+  const potencial=baseT-crossN;const pctPot=baseT>0?rd(potencial/baseT*100):0;
+  let medDays=0;if(crossDays2.length){const sorted=[...crossDays2].sort((a,b)=>a-b);const mid=Math.floor(sorted.length/2);medDays=sorted.length%2?sorted[mid]:Math.round((sorted[mid-1]+sorted[mid])/2);}
+  const w60=crossDays2.filter(d=>d<=60).length;const pW60=crossDays2.length>0?rd(w60/crossDays2.length*100):0;
+  CROSS_CACHE={crossN,baseT,ascT,avgCross2,avgCrossAc2,potencial,pctPot,medDays,pW60};
+}
+
+let LAST_AGG=null;let LAST_ROWS=null;
+
+function renderTab(tab){
+  if(!LAST_ROWS)return;
+  if(tab==='nps'){renderNPS();RENDERED_TABS.nps=true;return;}
+  renderAll(LAST_ROWS);
+}
+
 function renderAll(rows){
-  const a=aggregate(rows);const f=a.fin;
+  RENDERED_TABS={geral:false,engajamento:false,financeiro:false,nps:false};
+  const a=aggregate(rows);LAST_AGG=a;LAST_ROWS=rows;const f=a.fin;
   const perda=f.reembolso_v+f.chargeback_v+f.cancelado_v;
   const bruto=f.compras_v+perda;const ttx=f.compras_n+f.reembolso_n+f.chargeback_n+f.cancelado_n;
   const pctPerda=bruto>0?perda/bruto*100:0;const pctReemb=ttx>0?f.reembolso_n/ttx*100:0;
@@ -549,6 +582,7 @@ function renderAll(rows){
   const fcl=getMS('fStatusClub');
 
   // ========== TAB 1: VISÃO GERAL ==========
+  if(CURRENT_TAB==='geral'){
   let h1='';
   h1+='<div class="kpis">';
   h1+=kpiCard('linear-gradient(90deg,var(--accent),var(--a2))','Total Alunos',fmtN(a.total),'','var(--a2)');
@@ -590,7 +624,6 @@ function renderAll(rows){
   const ttTipo=taKeys.map(k=>k+': '+ta[k]+' ('+(taTotal>0?(ta[k]/taTotal*100).toFixed(1):0)+'%)').join(' · ');
   h1+='<div class="card"><h3>Tipo de Aluno</h3><div class="d">Distribuição por categoria</div><div class="donut-area"><div class="donut-ring" style="background:conic-gradient('+conic+')"><span class="tt">'+ttTipo+'</span><div style="width:120px;height:120px;background:var(--donut-hole);border-radius:50%;display:flex;align-items:center;justify-content:center"><div class="donut-center"><div class="donut-v" style="color:var(--accent)">'+fmtN(taTotal)+'</div><div class="donut-lbl">alunos</div></div></div></div><div class="donut-legend">'+legH+'</div></div></div>';
   const prodDist={};rows.forEach(r=>{const pk=normProd(r[R.PRODUTO]);prodDist[pk]=(prodDist[pk]||0)+1;});
-  const prodColors={base:'var(--accent)',asc:'var(--green)',escola:'var(--teal)',neuro:'var(--gold)',tea:'var(--pink)',outro:'var(--t3)'};
   h1+='<div class="card"><h3>Distribuição por Produto</h3><div class="d">Quantidade de alunos</div><div class="donut-area">'+multiSegmentDonut(prodDist,prodColors,'Distribuição por Produto')+'</div></div>';
 
   // Insights Visão Geral
@@ -599,8 +632,11 @@ function renderAll(rows){
   if(pctAcessou>90)h1+='<div class="ins ok"><div class="ins-t">✅ Base ativa: '+fmtP(pctAcessou)+' acessou</div><div class="ins-p">Foco em engajamento e conclusão.</div></div>';
   h1+='</div>';
   document.getElementById('contentGeral').innerHTML=h1;
+  RENDERED_TABS.geral=true;
+  }
 
   // ========== TAB 2: ENGAJAMENTO DO ALUNO ==========
+  if(CURRENT_TAB==='engajamento'){
   let h2='';
   // Progresso
   h2+='<div class="sec">📈 Progresso & Aulas</div><div class="g2">';
@@ -661,8 +697,11 @@ function renderAll(rows){
   if(avgProg<10)h2+='<div class="ins w"><div class="ins-t">🚨 Progresso baixo: '+fmtP(avgProg)+'</div><div class="ins-p">Ações de engajamento urgentes necessárias.</div></div>';
   h2+='</div>';
   document.getElementById('contentEngajamento').innerHTML=h2;
+  RENDERED_TABS.engajamento=true;
+  }
 
   // ========== TAB 3: FINANCEIRO & RECOMPRA ==========
+  if(CURRENT_TAB==='financeiro'){
   let h3='';
   // Faturamento por produto
   if(!isSingleProd){
@@ -696,23 +735,8 @@ function renderAll(rows){
     h3+='<div class="trend-card" style="border-top:4px solid '+color+'"><div style="font-size:14px;font-weight:600;color:var(--t2)">Últimos '+label+'</div><div style="font-size:13px;color:var(--t3)">vendas: '+fmtR(receitaPeriodo)+' ('+vd.n+' compras)</div><div class="trend-val" style="color:'+color+'">'+rb.n+' reembolsos</div><div class="trend-money" style="color:'+color+'">'+fmtR(rb.v)+'</div><span class="trend-pct" style="background:'+color+'22;color:'+color+'">'+fmtP(pctReembPeriodo)+' da receita do período</span></div>';
   });h3+='</div>';
 
-  // Cross-sell (ALWAYS visible — uses RAW_DATA)
-  const allBase=new Set(),allAsc=new Set(),progAll2={},acessosAll2={},dtAprovAll2={};
-  RAW_DATA.forEach(r=>{
-    if(r[R.EMAIL]){
-      const np=normProd(r[R.PRODUTO]);
-      if(np!=='asc'&&np!=='outro'){allBase.add(r[R.EMAIL]);if(!dtAprovAll2[r[R.EMAIL]])dtAprovAll2[r[R.EMAIL]]={};if(r[R.DT_COMPRA]&&(!dtAprovAll2[r[R.EMAIL]].base||r[R.DT_COMPRA]<dtAprovAll2[r[R.EMAIL]].base))dtAprovAll2[r[R.EMAIL]].base=r[R.DT_COMPRA];}
-      if(np==='asc'){allAsc.add(r[R.EMAIL]);if(!dtAprovAll2[r[R.EMAIL]])dtAprovAll2[r[R.EMAIL]]={};if(r[R.DT_COMPRA])dtAprovAll2[r[R.EMAIL]].asc=r[R.DT_COMPRA];}
-      if(r[R.PROG]!==null){if(!progAll2[r[R.EMAIL]])progAll2[r[R.EMAIL]]={};const np2=np==='asc'?'asc':'base';const prev=progAll2[r[R.EMAIL]][np2];if(prev===undefined||r[R.PROG]>prev)progAll2[r[R.EMAIL]][np2]=r[R.PROG];}
-      if(r[R.QTD_ACESSOS]!==null&&r[R.QTD_ACESSOS]>=0){if(!acessosAll2[r[R.EMAIL]])acessosAll2[r[R.EMAIL]]={};acessosAll2[r[R.EMAIL]][np==='asc'?'asc':'base']=r[R.QTD_ACESSOS];}
-    }
-  });
-  let crossN=0;const crossProgs2=[],crossAcessos2=[],crossDays2=[];
-  allAsc.forEach(e=>{if(allBase.has(e)){crossN++;if(progAll2[e]&&progAll2[e].base!==undefined)crossProgs2.push(progAll2[e].base);if(acessosAll2[e]&&acessosAll2[e].base!==undefined)crossAcessos2.push(acessosAll2[e].base);if(dtAprovAll2[e]&&dtAprovAll2[e].base&&dtAprovAll2[e].asc){const diff=Math.floor((dtAprovAll2[e].asc-dtAprovAll2[e].base)/86400000);if(diff>=0)crossDays2.push(diff);}}});
-  const baseT=allBase.size,ascT=allAsc.size;const avgCross2=crossProgs2.length?rd(avg(crossProgs2)):0;const avgCrossAc2=crossAcessos2.length?rd(avg(crossAcessos2)):0;
-  const potencial=baseT-crossN;const pctPot=baseT>0?rd(potencial/baseT*100):0;
-  let medDays=0;if(crossDays2.length){const sorted=[...crossDays2].sort((a,b)=>a-b);const mid=Math.floor(sorted.length/2);medDays=sorted.length%2?sorted[mid]:Math.round((sorted[mid-1]+sorted[mid])/2);}
-  const w60=crossDays2.filter(d=>d<=60).length;const pW60=crossDays2.length>0?rd(w60/crossDays2.length*100):0;
+  // Cross-sell (uses cached computation from RAW_DATA)
+  const {crossN,baseT,ascT,avgCross2,avgCrossAc2,potencial,pctPot,medDays,pW60}=CROSS_CACHE;
 
   h3+='<div class="sec">🔄 Oportunidade entre Produtos</div><div class="g2">';
   h3+='<div class="rc"><h3>Cross-sell Base → Mentoria no Divã <span class="rc-badge conv">Conversão</span></h3>';
@@ -782,6 +806,8 @@ function renderAll(rows){
   if(pctPot>50)h3+='<div class="ins i"><div class="ins-t">⚡ '+fmtP(pctPot)+' da base ainda não comprou a Mentoria</div><div class="ins-p">'+fmtN(potencial)+' alunos potenciais para cross-sell.</div></div>';
   h3+='</div>';
   document.getElementById('contentFinanceiro').innerHTML=h3;
+  RENDERED_TABS.financeiro=true;
+  }
 }
 
 function renderNPS(){
