@@ -305,6 +305,16 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .tab-btn .tab-short{display:none}.tab-btn .tab-full{display:inline}
 @media(max-width:1100px){.wrap{padding:0 24px 60px}.g2,.g3,.activ-grid{grid-template-columns:1fr}.g5{grid-template-columns:repeat(3,1fr)}.kpis{grid-template-columns:repeat(2,1fr)}.filter-grid{grid-template-columns:repeat(2,1fr)}.tab-nav{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}.tab-nav::-webkit-scrollbar{display:none}.tab-btn{flex-shrink:0}}
 .hbar-fill{overflow:hidden;text-overflow:ellipsis}@media(max-width:600px){.kpis,.g5{grid-template-columns:1fr}.ins-g{grid-template-columns:1fr}.kpi-v{font-size:36px}.hdr h1{font-size:24px}.filter-grid{grid-template-columns:1fr}.tab-btn{padding:10px 14px;font-size:12px}.tab-btn .tab-full{display:none}.tab-btn .tab-short{display:inline}.hero-big{font-size:32px}.hbar-fill{font-size:11px!important;padding-left:8px!important;overflow:visible!important}.hbar-lbl{min-width:80px!important;font-size:12px!important}.fin-val{font-size:22px!important}.fin{padding:20px 12px!important}.g5{gap:10px!important}.donut-v{font-size:17px!important}.donut-legend{font-size:11px!important;gap:8px!important}.ft-tag{min-width:140px!important;font-size:11px!important;padding:4px 8px!important}.ft-qty{font-size:14px!important;min-width:40px!important}.ft-pct{font-size:13px!important;min-width:50px!important}.chart-lbl{font-size:9px!important}.rc{padding:20px!important}.rc-row{flex-direction:column;gap:4px;align-items:flex-start}.trend-val{font-size:32px!important}.trend-card{padding:20px!important}.ab-lbl{width:50px!important;font-size:10px!important}.retention-fill{font-size:11px!important}.sec{font-size:12px!important;letter-spacing:1.5px!important}.donut-area{flex-direction:column;align-items:center}.donut-legend{flex-wrap:wrap}.g2{grid-template-columns:1fr!important}.g3{grid-template-columns:1fr!important}.filter-grid{grid-template-columns:1fr!important}.wrap{padding:0 12px 40px!important}}
+
+/* aba atendimento */
+.chart-tooltip{position:fixed;background:#1e293b;color:#f1f5f9;padding:10px 14px;border-radius:10px;font-size:12px;pointer-events:none;opacity:0;transition:opacity .2s;z-index:9999;border:1px solid rgba(255,255,255,.1);box-shadow:0 8px 24px rgba(0,0,0,.3);max-width:280px}.chart-tooltip.show{opacity:1}
+.chart-tooltip .tt-title{font-weight:700;font-size:14px;margin-bottom:4px;color:var(--accent)}
+.chart-tooltip .tt-row{display:flex;justify-content:space-between;gap:12px}
+.chart-tooltip .tt-label{color:#94a3b8}
+.chart-tooltip .tt-value{font-weight:600;font-family:'JetBrains Mono';color:#f1f5f9}
+.atend-pill{padding:8px 16px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--t2);font-size:12px;font-weight:600;cursor:pointer;transition:all .25s;letter-spacing:.3px}
+.atend-pill:hover{border-color:var(--bh);color:var(--t1)}
+.atend-pill.active{background:linear-gradient(135deg,var(--accent),var(--a2));color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(139,124,247,.3)}
 </style>
 </head>
 <body>
@@ -344,6 +354,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   <nav class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('geral',this)">📊 <span class="tab-full">Visão Geral</span><span class="tab-short">Visão</span></button>
     <button class="tab-btn" onclick="switchTab('engajamento',this)">🎯 <span class="tab-full">Engajamento do Aluno</span><span class="tab-short">Engajamento</span></button>
+<button class="tab-btn" onclick="switchTab('atendimento',this)">📞 Atendimento</button>
     <button class="tab-btn" onclick="switchTab('financeiro',this)">💰 <span class="tab-full">Financeiro & Recompra</span><span class="tab-short">Financeiro</span></button>
     <button class="tab-btn" onclick="switchTab('nps',this)">⭐ <span class="tab-full">NPS & Satisfação</span><span class="tab-short">NPS</span></button>
   </nav>
@@ -371,6 +382,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   <!-- TAB CONTENTS -->
   <div class="tab-content active" id="tab-geral"><div id="contentGeral"></div></div>
   <div class="tab-content" id="tab-engajamento"><div id="contentEngajamento"></div></div>
+<div class="tab-content" id="tab-atendimento"><div id="cAtend"></div></div>
   <div class="tab-content" id="tab-financeiro"><div id="contentFinanceiro"></div></div>
   <div class="tab-content" id="tab-nps"><div id="contentNPS"></div></div>
 
@@ -402,7 +414,7 @@ let CROSS_CACHE=null;let RENDERED_TABS={geral:false,engajamento:false,financeiro
 
 function doLogin(){const v=document.getElementById('pwdInput').value;if(v===PWD){document.getElementById('loginScreen').style.display='none';loadData();}else{document.getElementById('pwdError').style.display='block';}}
 function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('btnDark').classList.toggle('active',!d);document.getElementById('btnLight').classList.toggle('active',d);}
-function switchTab(tab,btn){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));document.getElementById('tab-'+tab).classList.add('active');btn.classList.add('active');CURRENT_TAB=tab;if(!RENDERED_TABS[tab]&&RAW_DATA){renderTab(tab);}}
+function switchTab(tab,btn){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));document.getElementById('tab-'+tab).classList.add('active');btn.classList.add('active');CURRENT_TAB=tab;if(!RENDERED_TABS[tab]&&RAW_DATA){renderTab(tab);}if(tab==='atendimento'&&typeof renderAtendimento==='function')renderAtendimento();}
 
 // Multi-select with "Select All"
 function buildMS(id,values){
@@ -422,6 +434,7 @@ document.addEventListener('click',e=>{if(!e.target.closest('.ms-wrap')){document
 async function loadData(){
   try{
     const r=await fetch(API_URL);const d=await r.json();
+    if(d.atendimento&&typeof mergeAtendimentoFromServer==='function'){try{mergeAtendimentoFromServer(d.atendimento);}catch(_e){console.warn('merge atend',_e);}}
     if(d.error)throw new Error(d.error);
     if(d.dict){const dict=d.dict;const dec=i=>typeof i==='number'?dict[i]:i;d.rows.forEach(r=>{r[0]=dec(r[0]);r[1]=dec(r[1]);r[2]=dec(r[2]);r[3]=dec(r[3]);r[4]=dec(r[4]);r[13]=dec(r[13]);});}
     RAW_DATA=d.rows;TODAY_MS=d.todayMs;
@@ -1136,6 +1149,392 @@ function renderNPS(){
 }
 
 loadData();
+
+/* ===== ABA ATENDIMENTO (transplante v8) ===== */
+const fN=n=>n.toLocaleString('pt-BR');
+let _tip=null;
+function initTip(){if(!_tip){_tip=document.createElement('div');_tip.className='chart-tooltip';document.body.appendChild(_tip);}}
+function showTip(e,html){initTip();_tip.innerHTML=html;_tip.classList.add('show');const x=Math.min(e.clientX+14,window.innerWidth-300);const y=Math.max(e.clientY-60,8);_tip.style.left=x+'px';_tip.style.top=y+'px';}
+function hideTip(){if(_tip)_tip.classList.remove('show');}
+const ATEND_SNAPSHOT={
+  atualizado_em:'—', inicio_projeto:'', meta_mensal:0,
+  alltime:{disparos:0,respostas:0,taxa_resp:0,alunos_atendidos:0,disparos_por_aluno:0,conversas_unicas:0,meta_proporcional:0,pct_meta:0,pace_diario:0,dias_corridos:0},
+  mes_atual:{label:'—',disparos:0,respostas:0,taxa_resp:0,alunos_atendidos:0,dias_decorridos:0,meta:0,meta_proporcional:0,pct_meta:0,projecao_fim_mes:0},
+  periodos:{
+    d7:{label:'Últimos 7 dias',sublabel:'aguardando dados do servidor (deploy do GAS + SUPABASE_KEY)',disparos:0,respostas:0,taxa_resp:0,alunos_atendidos:0,disparos_por_aluno:0,msgs_aluno:0,msgs_tcs:0,assuntos:[],nuvem:[],desafio:{},frases:{},ritmo:null,heatmap:null},
+    d8_14:{label:'Semana retrasada',sublabel:'aguardando dados',disparos:0,respostas:0,taxa_resp:0,alunos_atendidos:0,disparos_por_aluno:0,msgs_aluno:0,msgs_tcs:0,assuntos:[],nuvem:[],desafio:{},frases:{},ritmo:null,heatmap:null},
+    mai:{label:'Mês fechado',sublabel:'aguardando dados',disparos:0,respostas:0,taxa_resp:0,alunos_atendidos:0,disparos_por_aluno:0,msgs_aluno:0,msgs_tcs:0,assuntos:[],nuvem:[],desafio:{},frases:{},ritmo:null,heatmap:null}
+  }
+};
+let ATEND_PERIODO_ATUAL='d7';
+let ATEND_DATA_DE='';
+let ATEND_DATA_ATE='';
+
+async function fetchAtendimentoCustom(de, ate){
+  const url = API_URL + '?atend_de=' + encodeURIComponent(de) + '&atend_ate=' + encodeURIComponent(ate);
+  const r = await fetch(url, {cache:'no-store'});
+  if(!r.ok) throw new Error('GAS retornou '+r.status);
+  return await r.json();
+}
+
+function aplicarFiltroDataAtend(){
+  const de=document.getElementById('atendDataDe').value;
+  const ate=document.getElementById('atendDataAte').value;
+  if(!de || !ate){alert('Selecione data inicial e final');return;}
+  if(de>ate){alert('Data inicial maior que final');return;}
+  ATEND_DATA_DE=de; ATEND_DATA_ATE=ate;
+  const fmt=s=>{const[y,m,d]=s.split('-');return d+'/'+m+'/'+y.slice(2);};
+  // Loading state
+  ATEND_SNAPSHOT.periodos.custom={
+    label:fmt(de)+' a '+fmt(ate), sublabel:'Carregando dados…',
+    disparos:0, respostas:0, taxa_resp:0,
+    alunos_atendidos:0, disparos_por_aluno:0,
+    msgs_aluno:0, msgs_tcs:0,
+    assuntos:[], desafio:{pct_mencionou:0,n_mencionou:0,pct_engajou:0,n_engajou:0},
+    frases:{}, ritmo:null, heatmap:null,
+    observacao:'⏳ Buscando dados do Supabase…'
+  };
+  ATEND_PERIODO_ATUAL='custom';
+  renderAtendimento();
+  // Fetch real do GAS+Supabase
+  fetchAtendimentoCustom(de, ate).then(data=>{
+    if(data && data.error){
+      ATEND_SNAPSHOT.periodos.custom.observacao = '❌ Erro: '+data.error;
+    } else if(data && data.atendimento_custom){
+      mergeAtendimentoFromServer(data.atendimento_custom);
+    } else {
+      ATEND_SNAPSHOT.periodos.custom.observacao = '⚠️ Resposta vazia do servidor — verifica se o GAS foi atualizado com o código novo e redeployado.';
+    }
+    renderAtendimento();
+  }).catch(e=>{
+    console.warn('Filtro custom falhou:',e);
+    ATEND_SNAPSHOT.periodos.custom.observacao = '❌ Erro: '+e.message+' — verifica se o GAS foi atualizado com o código novo (doGet com atend_de/atend_ate) e redeployado.';
+    renderAtendimento();
+  });
+}
+
+function limparFiltroDataAtend(){
+  ATEND_DATA_DE=''; ATEND_DATA_ATE='';
+  delete ATEND_SNAPSHOT.periodos.custom;
+  if(ATEND_PERIODO_ATUAL==='custom') ATEND_PERIODO_ATUAL='d7';
+  renderAtendimento();
+}
+
+// Mescla o JSON vindo do Supabase (via GAS) com o ATEND_SNAPSHOT.
+// Mapeia labels/emojis/cores dos assuntos (a RPC só retorna cat/n/pct).
+function mergeAtendimentoFromServer(supa){
+  if(!supa || !supa.periodos) return;
+  const ASSUNTO_META={
+    risco:{label:'Risco / churn',emoji:'⚠️',cor:'#f87171'},
+    tecnico:{label:'Suporte técnico',emoji:'🔧',cor:'#38bdf8'},
+    dificuldade:{label:'Dificuldade / dúvida',emoji:'🆘',cor:'#fb923c'},
+    acesso:{label:'Acesso liberado',emoji:'🔓',cor:'#14b8a6'},
+    engajamento_curso:{label:'Engajamento com curso',emoji:'🎓',cor:'#22d3ee'},
+    elogios:{label:'Elogios / satisfação',emoji:'👏',cor:'#fbbf24'},
+    prova:{label:'Prova social / resultado',emoji:'⭐',cor:'#34d399'},
+    compromisso:{label:'Compromisso / ativação',emoji:'💪',cor:'#8b7cf7'},
+    comunidade:{label:'Comunidade / grupo',emoji:'👥',cor:'#a78bfa'},
+    afetivo:{label:'Tom afetivo / vida pessoal',emoji:'❤️',cor:'#f472b6'},
+    automatico:{label:'Resposta automática (não engajou)',emoji:'🤖',cor:'#64748b'},
+    outros:{label:'Saudação / sem assunto',emoji:'💬',cor:'#475569'}
+  };
+  function enriqAssuntos(arr){
+    if(!arr||!arr.length) return [];
+    // Enriquece + ordena por % desc, com "outros" sempre no fim
+    const enriquecidos = arr.filter(a=>a.n>0).map(a=>{
+      const m=ASSUNTO_META[a.cat]||{label:a.cat,emoji:'•',cor:'#94a3b8'};
+      return {cat:a.cat,label:m.label,emoji:m.emoji,cor:m.cor,n:a.n,pct:typeof a.pct==='number'?a.pct:parseFloat(a.pct)||0};
+    });
+    enriquecidos.sort((a,b)=>{
+      if(a.cat==='outros') return 1;
+      if(b.cat==='outros') return -1;
+      return b.pct - a.pct;
+    });
+    return enriquecidos;
+  }
+  function adaptaPeriodo(p){
+    if(!p) return null;
+    return {
+      label:p.label,sublabel:p.sublabel,
+      disparos:p.disparos||0,respostas:p.respostas||0,
+      taxa_resp:parseFloat(p.taxa_resp)||0,
+      alunos_atendidos:p.alunos_atendidos||0,
+      disparos_por_aluno:parseFloat(p.disparos_por_aluno)||0,
+      msgs_aluno:p.msgs_aluno||0,msgs_tcs:p.msgs_tcs||0,
+      assuntos:enriqAssuntos(p.assuntos),
+      nuvem:Array.isArray(p.nuvem)?p.nuvem:[],
+      desafio:p.desafio||{pct_mencionou:0,n_mencionou:0,pct_engajou:0,n_engajou:0},
+      frases:p.frases||{},
+      ritmo:Array.isArray(p.ritmo)?p.ritmo:null,
+      heatmap:Array.isArray(p.heatmap)&&p.heatmap.length===24?p.heatmap:null
+    };
+  }
+  ATEND_SNAPSHOT.atualizado_em=supa.atualizado_em||ATEND_SNAPSHOT.atualizado_em;
+  ATEND_SNAPSHOT.inicio_projeto=supa.inicio_projeto||ATEND_SNAPSHOT.inicio_projeto;
+  ATEND_SNAPSHOT.meta_mensal=supa.meta_mensal||ATEND_SNAPSHOT.meta_mensal;
+  if(supa.alltime){
+    const a=supa.alltime;
+    ATEND_SNAPSHOT.alltime={
+      disparos:a.disparos||0,respostas:a.respostas||0,
+      taxa_resp:parseFloat(a.taxa_resp)||0,
+      alunos_atendidos:a.alunos_atendidos||0,
+      disparos_por_aluno:parseFloat(a.disparos_por_aluno)||0,
+      conversas_unicas:a.conversas_unicas||0,
+      dias_corridos:supa.dias_corridos||0,
+      meta_proporcional:a.meta_proporcional||0,
+      pct_meta:parseFloat(a.pct_meta)||0,
+      pace_diario:parseFloat(a.pace_diario)||0
+    };
+  }
+  if(supa.mes_atual){
+    const m=supa.mes_atual;
+    ATEND_SNAPSHOT.mes_atual={
+      label:m.label,disparos:m.disparos||0,
+      alunos_atendidos:m.alunos_atendidos||0,
+      dias_decorridos:m.dias_decorridos||0,
+      meta:m.meta||ATEND_SNAPSHOT.meta_mensal,
+      meta_proporcional:m.meta_proporcional||0,
+      pct_meta:parseFloat(m.pct_meta)||0,
+      projecao_fim_mes:m.projecao_fim_mes||0
+    };
+  }
+  const P=supa.periodos;
+  if(P.d7)         ATEND_SNAPSHOT.periodos.d7    = adaptaPeriodo(P.d7);
+  if(P.d8_14)      ATEND_SNAPSHOT.periodos.d8_14 = adaptaPeriodo(P.d8_14);
+  // SQL devolve "mes_fechado", o frontend usa chave "mai"
+  if(P.mes_fechado) ATEND_SNAPSHOT.periodos.mai  = adaptaPeriodo(P.mes_fechado);
+  if(P.custom)     ATEND_SNAPSHOT.periodos.custom = adaptaPeriodo(P.custom);
+  // Re-renderiza se a aba já está visível
+  if(typeof renderAtendimento==='function'){
+    const ativa=document.getElementById('tab-atendimento');
+    if(ativa && ativa.classList.contains('active')) renderAtendimento();
+  }
+}
+
+function setAtendPeriodo(p,btn){
+  ATEND_PERIODO_ATUAL=p;
+  document.querySelectorAll('.atend-pill').forEach(x=>x.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  renderAtendimento();
+}
+
+function renderAtendimento(){
+  const cont=document.getElementById('cAtend');
+  if(!cont)return;
+  const S=ATEND_SNAPSHOT;
+  const p=S.periodos[ATEND_PERIODO_ATUAL];
+  if(!p){cont.innerHTML='<div style="text-align:center;padding:60px;color:var(--t3)">Período não encontrado.</div>';return;}
+
+  // === Header com filtro de período + filtro de data customizado + selo de atualização ===
+  let h='';
+  h+='<div style="display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:16px;margin:8px 0 14px">';
+  // Bloco esquerda: pills + filtro customizado
+  h+='<div style="display:flex;flex-direction:column;gap:10px;flex:1;min-width:280px">';
+  h+='<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">';
+  ['d7','d8_14','mai'].forEach(k=>{
+    const lab=S.periodos[k].label;
+    const cls=(k===ATEND_PERIODO_ATUAL && !S.periodos.custom)?'atend-pill active':'atend-pill';
+    h+='<button class="'+cls+'" onclick="setAtendPeriodo(\''+k+'\',this)">'+lab+'</button>';
+  });
+  if(S.periodos.custom){
+    const ccls=(ATEND_PERIODO_ATUAL==='custom')?'atend-pill active':'atend-pill';
+    h+='<button class="'+ccls+'" onclick="setAtendPeriodo(\'custom\',this)">📅 '+S.periodos.custom.label+'</button>';
+  }
+  h+='</div>';
+  // Linha de filtro customizado
+  h+='<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--t3)">';
+  h+='<span style="color:var(--t3)">Ou intervalo:</span>';
+  h+='<input type="date" id="atendDataDe" value="'+(ATEND_DATA_DE||'')+'" style="padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--t1);font-size:12px;font-family:JetBrains Mono">';
+  h+='<span style="color:var(--t3)">até</span>';
+  h+='<input type="date" id="atendDataAte" value="'+(ATEND_DATA_ATE||'')+'" style="padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--t1);font-size:12px;font-family:JetBrains Mono">';
+  h+='<button onclick="aplicarFiltroDataAtend()" style="padding:6px 14px;border-radius:8px;border:none;background:linear-gradient(135deg,var(--accent),var(--a2));color:#fff;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.5px">APLICAR</button>';
+  if(S.periodos.custom)h+='<button onclick="limparFiltroDataAtend()" style="padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--t3);font-size:11px;cursor:pointer">Limpar</button>';
+  h+='</div>';
+  h+='</div>';
+  // Bloco direita: selo de atualização
+  h+='<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;text-align:right">';
+  h+='<div style="font-size:12px;color:var(--t2);font-family:JetBrains Mono">🕒 Atualizado em '+S.atualizado_em+'</div>';
+  h+='<div style="font-size:10.5px;color:var(--t3);max-width:240px">Atualiza automaticamente todo dia às <strong style="color:var(--t2)">7h00 (Brasília)</strong></div>';
+  h+='</div>';
+  h+='</div>';
+  h+='<div style="font-size:13px;color:var(--t2);margin-bottom:6px">Período: <strong style="color:var(--t1)">'+p.label+'</strong> · '+p.sublabel+'</div>';
+  if(p.observacao){
+    h+='<div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:12px;padding:12px 16px;margin:14px 0;font-size:12px;color:var(--t2);line-height:1.55">⚠️ '+p.observacao+'</div>';
+  }
+
+  // === BLOCO 1 — KPIs Executivos ===
+  h+='<div class="kpis">';
+  h+='<div class="kpi"><div class="kpi-bar" style="background:linear-gradient(90deg,var(--accent),var(--a2))"></div><div class="kpi-l">Disparos</div><div class="kpi-v" style="color:var(--a2)">'+fN(p.disparos)+'</div><div class="kpi-s">mensagens enviadas (campanha)</div></div>';
+  h+='<div class="kpi"><div class="kpi-bar" style="background:linear-gradient(90deg,var(--sky),var(--cyan))"></div><div class="kpi-l">Respostas</div><div class="kpi-v" style="color:var(--cyan)">'+fN(p.respostas)+'</div><div class="kpi-s">alunos engajaram</div></div>';
+  h+='<div class="kpi"><div class="kpi-bar" style="background:linear-gradient(90deg,var(--green),var(--teal))"></div><div class="kpi-l">Taxa de resposta</div><div class="kpi-v" style="color:var(--green)">'+p.taxa_resp.toFixed(1)+'%</div><div class="kpi-s">respostas / disparos</div></div>';
+  h+='<div class="kpi"><div class="kpi-bar" style="background:linear-gradient(90deg,var(--gold),var(--orange))"></div><div class="kpi-l">Alunos atendidos</div><div class="kpi-v" style="color:var(--gold)">'+fN(p.alunos_atendidos)+'</div><div class="kpi-s">contatos únicos no período</div></div>';
+  h+='<div class="kpi"><div class="kpi-bar" style="background:linear-gradient(90deg,var(--pink),var(--a2))"></div><div class="kpi-l">Disparos por aluno</div><div class="kpi-v" style="color:var(--pink)">'+p.disparos_por_aluno.toFixed(2)+'</div><div class="kpi-s">'+fN(p.msgs_aluno)+' msgs aluno · '+fN(p.msgs_tcs)+' msgs TCS</div></div>';
+  h+='</div>';
+
+  // === BLOCO META + ALL-TIME (com indicador on track) ===
+  const ma=S.mes_atual;
+  const at=S.alltime;
+  function statusMeta(pct){
+    if(pct >= 110) return {label:'ACIMA DA META', cor:'var(--green)', bg:'rgba(52,211,153,.12)', icon:'🚀'};
+    if(pct >= 90)  return {label:'NO TRACK',      cor:'var(--accent)', bg:'rgba(139,124,247,.12)', icon:'✅'};
+    if(pct >= 60)  return {label:'ATENÇÃO',       cor:'var(--gold)', bg:'rgba(251,191,36,.12)', icon:'⚠️'};
+    return                 {label:'ABAIXO',       cor:'var(--red)', bg:'rgba(248,113,113,.12)', icon:'🔴'};
+  }
+  const stMes=statusMeta(ma.pct_meta);
+  const stAll=statusMeta(at.pct_meta);
+  h+='<div class="sec">🎯 Meta · Acompanhamento</div>';
+  h+='<div class="g2">';
+  // Card mês atual
+  h+='<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><h3>Mês atual · '+ma.label+'</h3><div class="d">'+ma.dias_decorridos+' dias corridos · meta '+fN(ma.meta)+'/mês</div></div>';
+  h+='<div style="padding:6px 12px;border-radius:20px;background:'+stMes.bg+';color:'+stMes.cor+';font-size:11px;font-weight:700;letter-spacing:1px;white-space:nowrap">'+stMes.icon+' '+stMes.label+'</div></div>';
+  h+='<div style="display:flex;align-items:baseline;gap:8px;margin-top:14px"><div style="font-size:34px;font-weight:700;font-family:JetBrains Mono;color:var(--accent)">'+fN(ma.disparos)+'</div><div style="color:var(--t2);font-size:13px">disparos · '+fN(ma.alunos_atendidos)+' alunos</div></div>';
+  h+='<div style="background:var(--track-bg);border-radius:10px;height:14px;overflow:hidden;margin-top:10px;position:relative">';
+  h+='<div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.25);z-index:2" title="Meta proporcional"></div>';
+  h+='<div style="height:100%;width:'+Math.min(100,ma.pct_meta/2).toFixed(1)+'%;background:linear-gradient(90deg,var(--accent),var(--a2));display:flex;align-items:center;justify-content:flex-end;padding-right:10px;font-size:11px;color:#fff;font-weight:700">'+ma.pct_meta.toFixed(0)+'%</div></div>';
+  h+='<div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10.5px;color:var(--t3);font-family:JetBrains Mono"><span>meta proporcional: '+fN(ma.meta_proporcional)+'</span><span>projeção fim mês: '+fN(ma.projecao_fim_mes)+'</span></div></div>';
+  // Card all-time
+  h+='<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><h3>All-time · desde '+S.inicio_projeto+'</h3><div class="d">'+at.dias_corridos+' dias · '+at.pace_diario.toFixed(0)+' disparos/dia em média</div></div>';
+  h+='<div style="padding:6px 12px;border-radius:20px;background:'+stAll.bg+';color:'+stAll.cor+';font-size:11px;font-weight:700;letter-spacing:1px;white-space:nowrap">'+stAll.icon+' '+stAll.label+'</div></div>';
+  h+='<div style="display:flex;align-items:baseline;gap:8px;margin-top:14px"><div style="font-size:34px;font-weight:700;font-family:JetBrains Mono;color:var(--teal)">'+fN(at.disparos)+'</div><div style="color:var(--t2);font-size:13px">disparos · '+fN(at.alunos_atendidos)+' alunos · '+at.disparos_por_aluno.toFixed(2)+'/aluno</div></div>';
+  h+='<div style="background:var(--track-bg);border-radius:10px;height:14px;overflow:hidden;margin-top:10px;position:relative">';
+  h+='<div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.25);z-index:2"></div>';
+  h+='<div style="height:100%;width:'+Math.min(100,at.pct_meta/2).toFixed(1)+'%;background:linear-gradient(90deg,var(--teal),var(--green));display:flex;align-items:center;justify-content:flex-end;padding-right:10px;font-size:11px;color:#fff;font-weight:700">'+at.pct_meta.toFixed(0)+'%</div></div>';
+  h+='<div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10.5px;color:var(--t3);font-family:JetBrains Mono"><span>meta proporcional: '+fN(at.meta_proporcional)+'</span><span>'+fN(at.respostas)+' respostas · '+at.taxa_resp.toFixed(1)+'%</span></div></div>';
+  h+='</div>';
+
+  // === BLOCO Campanha Desafio 30 Dias (transversal) ===
+  if(p.desafio && p.desafio.n_mencionou > 0){
+    h+='<div class="sec">🎯 Campanha · Desafio 30 Dias</div>';
+    h+='<div class="g2">';
+    h+='<div class="card"><h3>Alcance da campanha</h3><div class="d">Conversas que mencionaram o Desafio</div>';
+    h+='<div style="display:flex;align-items:baseline;gap:8px;margin-top:8px"><div style="font-size:42px;font-weight:700;font-family:JetBrains Mono;color:var(--accent)">'+p.desafio.pct_mencionou.toFixed(1)+'%</div><div style="color:var(--t2);font-size:13px">('+p.desafio.n_mencionou+' conversas)</div></div></div>';
+    h+='<div class="card"><h3>Engajamento positivo</h3><div class="d">Quem mencionou e demonstrou compromisso ("vou fazer", "tô dentro")</div>';
+    h+='<div style="display:flex;align-items:baseline;gap:8px;margin-top:8px"><div style="font-size:42px;font-weight:700;font-family:JetBrains Mono;color:var(--green)">'+p.desafio.pct_engajou.toFixed(1)+'%</div><div style="color:var(--t2);font-size:13px">('+p.desafio.n_engajou+' de '+p.desafio.n_mencionou+')</div></div></div>';
+    h+='</div>';
+  }
+
+  // === BLOCO Conversas por Assunto (hierárquico, 1 conv = 1 assunto) ===
+  h+='<div class="sec">💬 Conversas por Assunto</div>';
+  h+='<div style="font-size:12px;color:var(--t3);margin:-10px 0 14px">Cada conversa é classificada pelo assunto dominante (prioridade: risco → técnico → dificuldade → prova → elogios → acesso → engajamento com curso → compromisso → comunidade → afetivo → 🤖 resposta automática → saudação/sem assunto). Prova social = resultado real (arremate/leilão), não só a palavra. "Resposta automática" = bot do próprio aluno respondeu (não houve engajamento pessoal).</div>';
+  h+='<div class="card" style="padding:18px 22px">';
+  // Ordena por % desc com "outros" no fim (idempotente caso o snapshot já venha enriquecido)
+  // Ordena por tamanho (maior → menor), mantendo "Saudação / sem assunto" (outros) sempre por último
+  const assuntosOrd = [...p.assuntos].filter(a=>a.n>0).sort((a,b)=>{
+    if(a.cat==='outros') return 1;
+    if(b.cat==='outros') return -1;
+    return b.pct - a.pct;
+  });
+  assuntosOrd.forEach(a=>{
+    const tip='<div class=tt-title>'+a.emoji+' '+a.label+'</div><div class=tt-row><span class=tt-label>Conversas:</span><span class=tt-value>'+a.n+'</span></div><div class=tt-row><span class=tt-label>% do período:</span><span class=tt-value>'+a.pct.toFixed(1)+'%</span></div>';
+    h+='<div style="display:flex;align-items:center;gap:12px;margin:10px 0;cursor:default" onmouseenter="showTip(event,\''+tip.replace(/'/g,'')+'\')" onmousemove="showTip(event,\''+tip.replace(/'/g,'')+'\')" onmouseleave="hideTip()">';
+    h+='<div style="width:200px;font-size:13px;color:var(--t1);font-weight:600">'+a.emoji+' '+a.label+'</div>';
+    h+='<div style="flex:1;background:var(--track-bg);border-radius:8px;height:22px;overflow:hidden">';
+    // Garante largura mínima de 32px na barra pra caber % mesmo em valores baixos (1-3%)
+    const minPct = Math.max(a.pct, 3);
+    h+='<div style="height:100%;width:'+minPct.toFixed(1)+'%;min-width:46px;background:'+a.cor+';display:flex;align-items:center;justify-content:flex-end;padding-right:10px;font-size:11px;color:#fff;font-weight:700;font-family:JetBrains Mono">'+a.pct.toFixed(1)+'%</div></div>';
+    h+='<div style="width:90px;text-align:right;font-size:12px;color:var(--t3);font-family:JetBrains Mono">'+a.n+' conv.</div>';
+    h+='</div>';
+  });
+  h+='</div>';
+
+  // === Frases reais por assunto (se houver) ===
+  if(p.frases && Object.keys(p.frases).length){
+    h+='<div class="sec">💭 Frases reais (anonimizadas)</div>';
+    h+='<div class="ins-g">';
+    const ordemFrases=['risco','tecnico','dificuldade','prova','elogios','acesso','engajamento_curso','compromisso','comunidade','afetivo'];
+    const mapEmoji={risco:'⚠️',tecnico:'🔧',dificuldade:'🆘',acesso:'🔓',engajamento_curso:'🎓',elogios:'👏',prova:'⭐',compromisso:'💪',comunidade:'👥',afetivo:'❤️'};
+    const mapLabel={risco:'Risco / churn',tecnico:'Suporte técnico',dificuldade:'Dificuldade',acesso:'Acesso liberado',engajamento_curso:'Engajamento com curso',elogios:'Elogios / satisfação',prova:'Prova social',compromisso:'Compromisso',comunidade:'Comunidade',afetivo:'Tom afetivo'};
+    const mapCor={risco:'w',tecnico:'',dificuldade:'',acesso:'ok',engajamento_curso:'ok',elogios:'ok',prova:'ok',compromisso:'ok',comunidade:'',afetivo:''};
+    ordemFrases.forEach(k=>{
+      if(!p.frases[k]||!p.frases[k].length)return;
+      const cls='ins '+(mapCor[k]||'');
+      h+='<div class="'+cls+'" style="display:flex;flex-direction:column;gap:8px">';
+      h+='<div class="ins-t">'+mapEmoji[k]+' '+mapLabel[k]+'</div>';
+      p.frases[k].forEach(fr=>{
+        h+='<div style="font-size:12px;color:var(--t2);line-height:1.5;padding:8px 10px;background:rgba(255,255,255,.02);border-radius:8px;border-left:2px solid var(--border)">"'+fr+'"</div>';
+      });
+      h+='</div>';
+    });
+    h+='</div>';
+  }
+
+  // === BLOCO Nuvem de palavras ===
+  if(p.nuvem && p.nuvem.length){
+    h+='<div class="sec">☁️ Nuvem de palavras</div>';
+    h+='<div class="card"><h3>Termos mais usados pelos alunos</h3><div class="d">O que mais aparece nas mensagens recebidas · '+p.label.toLowerCase()+'</div>';
+    const nuvMax=Math.max.apply(null,p.nuvem.map(x=>x.n));
+    const nuvMin=Math.min.apply(null,p.nuvem.map(x=>x.n));
+    const nuvCores=['#22d3ee','#34d399','#8b7cf7','#f472b6','#fbbf24','#38bdf8','#fb923c','#a78bfa'];
+    h+='<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 16px;padding:24px 10px;line-height:1.25">';
+    p.nuvem.forEach((x,i)=>{
+      const t=nuvMax>nuvMin?(x.n-nuvMin)/(nuvMax-nuvMin):1;
+      const fs=(13+t*30).toFixed(0);
+      const op=(0.55+t*0.45).toFixed(2);
+      const peso=600+Math.round(t*200);
+      const cor=nuvCores[i%nuvCores.length];
+      const tip='<div class=tt-title>☁️ '+x.w+'</div><div class=tt-row><span class=tt-label>Aparições:</span><span class=tt-value>'+fN(x.n)+'</span></div>';
+      h+='<span style="font-size:'+fs+'px;color:'+cor+';opacity:'+op+';font-weight:'+peso+';cursor:default" onmouseenter="showTip(event,\''+tip.replace(/'/g,'')+'\')" onmousemove="showTip(event,\''+tip.replace(/'/g,'')+'\')" onmouseleave="hideTip()">'+x.w+'</span>';
+    });
+    h+='</div></div>';
+  }
+
+  // === BLOCO Ritmo (gráfico de barras) ===
+  if(p.ritmo && p.ritmo.length){
+    h+='<div class="sec">📈 Ritmo diário</div>';
+    h+='<div class="card"><h3>Mensagens por dia</h3><div class="d">Recebidas (aluno) vs enviadas (TCS)</div>';
+    const max=Math.max.apply(null, p.ritmo.flatMap(d=>[d.rec,d.env]));
+    h+='<div style="display:flex;align-items:flex-end;gap:8px;height:200px;margin-top:18px;padding:0 4px">';
+    p.ritmo.forEach(d=>{
+      const hRec=max?Math.max(2,(d.rec/max)*180):0;
+      const hEnv=max?Math.max(2,(d.env/max)*180):0;
+      const tipR='<div class=tt-title>📅 '+d.dia+'</div><div class=tt-row><span class=tt-label>Recebidas (aluno):</span><span class=tt-value>'+fN(d.rec)+'</span></div><div class=tt-row><span class=tt-label>Enviadas (TCS):</span><span class=tt-value>'+fN(d.env)+'</span></div><div class=tt-row><span class=tt-label>Total:</span><span class=tt-value>'+fN(d.rec+d.env)+'</span></div>';
+      h+='<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:default" onmouseenter="showTip(event,\''+tipR.replace(/'/g,'')+'\')" onmousemove="showTip(event,\''+tipR.replace(/'/g,'')+'\')" onmouseleave="hideTip()">';
+      h+='<div style="display:flex;gap:3px;align-items:flex-end;height:180px">';
+      h+='<div style="width:14px;height:'+hRec+'px;background:var(--accent);border-radius:3px 3px 0 0"></div>';
+      h+='<div style="width:14px;height:'+hEnv+'px;background:var(--teal);border-radius:3px 3px 0 0"></div>';
+      h+='</div>';
+      h+='<div style="font-size:10px;color:var(--t3);font-family:JetBrains Mono">'+d.dia+'</div>';
+      h+='</div>';
+    });
+    h+='</div>';
+    h+='<div style="display:flex;gap:18px;margin-top:14px;font-size:12px;color:var(--t2)"><div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:12px;background:var(--accent);border-radius:3px"></div>Recebidas (aluno)</div><div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:12px;background:var(--teal);border-radius:3px"></div>Enviadas (TCS)</div></div>';
+    h+='</div>';
+  }
+
+  // === BLOCO Heatmap por hora ===
+  if(p.heatmap && p.heatmap.length===24){
+    h+='<div class="sec">🕒 Quando o aluno fala</div>';
+    h+='<div class="card"><h3>Mensagens por hora do dia</h3><div class="d">Período: '+p.label.toLowerCase()+' · fuso América/São Paulo</div>';
+    const maxH=Math.max.apply(null,p.heatmap);
+    h+='<div style="display:flex;gap:3px;align-items:flex-end;height:120px;margin-top:18px">';
+    for(let i=0;i<24;i++){
+      const v=p.heatmap[i];
+      const alt=maxH?Math.max(3,(v/maxH)*110):3;
+      const opacity=maxH?Math.max(.15,v/maxH):.15;
+      const tipH='<div class=tt-title>🕒 '+(i<10?'0'+i:i)+'h00 — '+(i<10?'0'+i:i)+'h59</div><div class=tt-row><span class=tt-label>Mensagens:</span><span class=tt-value>'+fN(v)+'</span></div><div class=tt-row><span class=tt-label>% do pico:</span><span class=tt-value>'+(maxH?(100*v/maxH).toFixed(0):'0')+'%</span></div>';
+      h+='<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:default" onmouseenter="showTip(event,\''+tipH.replace(/'/g,'')+'\')" onmousemove="showTip(event,\''+tipH.replace(/'/g,'')+'\')" onmouseleave="hideTip()">';
+      h+='<div style="width:100%;height:'+alt+'px;background:var(--accent);opacity:'+opacity.toFixed(2)+';border-radius:3px 3px 0 0"></div>';
+      h+='<div style="font-size:9px;color:var(--t3);font-family:JetBrains Mono">'+(i<10?'0'+i:i)+'</div>';
+      h+='</div>';
+    }
+    h+='</div></div>';
+  }
+
+  // === BLOCO Funil + Onboarding (placeholders) ===
+  h+='<div class="sec">🔄 Movimentação de Funil</div>';
+  h+='<div class="card" style="border:1px dashed var(--border);background:rgba(139,124,247,.04)"><div style="font-size:13px;color:var(--t2);line-height:1.6">Bloco em coleta. A partir de hoje começamos a registrar um snapshot diário do <code style="font-family:JetBrains Mono;color:var(--accent)">Funil Calculado</code> da planilha do Murilo. Em 7-14 dias este painel mostrará: <strong style="color:var(--t1)">X% saíram de "Nunca acessou" após nosso disparo</strong> e <strong style="color:var(--t1)">Y% passaram a consumir aulas</strong>.</div></div>';
+
+  h+='<div class="sec">👋 Onboarding vs Ongoing</div>';
+  h+='<div class="card" style="border:1px dashed var(--border);background:rgba(45,212,191,.04)"><div style="font-size:13px;color:var(--t2);line-height:1.6">Bloco em coleta. Cruzando o <code style="font-family:JetBrains Mono;color:var(--accent)">email</code> dos contatos do WhatsApp com a coluna <code style="font-family:JetBrains Mono;color:var(--accent)">Data Aprovação</code> da planilha — virá quando o GAS estiver puxando do Supabase. Mostrará a divisão entre alunos novos (compra &lt; 30d) e alunos já na base.</div></div>';
+
+  // === Rodapé com fonte de dados ===
+  h+='<div style="margin-top:32px;padding:14px 18px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:11px;color:var(--t3);line-height:1.6;font-family:JetBrains Mono">';
+  h+='Fonte: Supabase CS-IA · cliente Murilo Arjona · exclui contatos "Tiago"/"Teste" · disparo = cada nota privada do bot (cada mensagem conta, mesmo aluno pode receber várias) · resposta = aluno respondeu antes do próximo disparo · 1 conversa = 1 assunto dominante (classificação hierárquica)';
+  h+='</div>';
+
+  cont.innerHTML=h;
+}
+
 </script>
 </body>
 </html>
