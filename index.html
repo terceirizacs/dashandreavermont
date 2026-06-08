@@ -1404,17 +1404,6 @@ function renderAtendimento(){
   h+='<div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10.5px;color:var(--t3);font-family:JetBrains Mono"><span>meta proporcional: '+fN(at.meta_proporcional)+'</span><span>'+fN(at.respostas)+' respostas · '+at.taxa_resp.toFixed(1)+'%</span></div></div>';
   h+='</div>';
 
-  // === BLOCO Campanha Desafio 30 Dias (transversal) ===
-  if(p.desafio && p.desafio.n_mencionou > 0){
-    h+='<div class="sec">🎯 Campanha · Desafio 30 Dias</div>';
-    h+='<div class="g2">';
-    h+='<div class="card"><h3>Alcance da campanha</h3><div class="d">Conversas que mencionaram o Desafio</div>';
-    h+='<div style="display:flex;align-items:baseline;gap:8px;margin-top:8px"><div style="font-size:42px;font-weight:700;font-family:JetBrains Mono;color:var(--accent)">'+p.desafio.pct_mencionou.toFixed(1)+'%</div><div style="color:var(--t2);font-size:13px">('+p.desafio.n_mencionou+' conversas)</div></div></div>';
-    h+='<div class="card"><h3>Engajamento positivo</h3><div class="d">Quem mencionou e demonstrou compromisso ("vou fazer", "tô dentro")</div>';
-    h+='<div style="display:flex;align-items:baseline;gap:8px;margin-top:8px"><div style="font-size:42px;font-weight:700;font-family:JetBrains Mono;color:var(--green)">'+p.desafio.pct_engajou.toFixed(1)+'%</div><div style="color:var(--t2);font-size:13px">('+p.desafio.n_engajou+' de '+p.desafio.n_mencionou+')</div></div></div>';
-    h+='</div>';
-  }
-
   // === BLOCO Disparos por Funil + Onboarding/Ongoing (por período + taxa de resposta) ===
   const funilKeyMap={d7:'d7',d8_14:'d814',mai:'mai',custom:'all'};
   const fKey=funilKeyMap[ATEND_PERIODO_ATUAL]||'all';
