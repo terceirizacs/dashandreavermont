@@ -703,8 +703,8 @@ function renderAll(rows){
   h2+='<div class="card"><h3>Acesso ao Curso</h3><div class="d">Acessaram vs nunca acessaram</div><div class="donut-area">'+donutHTML('var(--teal)',degAc,'var(--red)',fmtP(pctAcessou),'acessou','Acessou: '+a.acessou+' ('+fmtP(pctAcessou)+') · Nunca: '+a.nuncaAcessou+' ('+fmtP(pctNunca)+')','Acessou',a.acessou,'var(--teal)','Nunca',a.nuncaAcessou,'var(--red)')+'</div></div>';
   const d60=a.faixaDias['>60d']||0;const d31=a.faixaDias['31-60d']||0;const d15=a.faixaDias['15-30d']||0;const d0=a.faixaDias['0-14d']||0;
   const pD60=a.total>0?d60/a.total*100:0;const degD=Math.round((100-pD60)/100*360);
+  h2+='<div class="card"><h3>Inatividade</h3><div class="d">Dias desde o último acesso</div><div class="hbar-area" style="height:auto">'+inatHbar(a)+'</div></div>';
   h2+='</div>';
-  h2+='<div class="card" style="margin-top:24px"><h3>Inatividade</h3><div class="d">Dias desde o último acesso</div><div class="hbar-area" style="height:auto">'+inatHbar(a)+'</div></div>';
 
   // Insights Engajamento
   h2+='<div class="sec">💡 Insights — Engajamento</div><div class="ins-g">';
