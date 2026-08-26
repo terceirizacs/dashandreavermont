@@ -402,11 +402,19 @@ const fmtR=n=>'R$ '+Math.round(n).toLocaleString('pt-BR');
 const fmtRS=n=>{if(n>=1000000)return'R$ '+(n/1000000).toFixed(1).replace('.',',')+' M';return fmtR(n);};
 const fmtP=n=>n.toFixed(1).replace('.',',')+' %';
 function helpQ(def){return '<span onmouseenter="showTip(event,'+def+')" onmousemove="showTip(event,'+def+')" onmouseleave="hideTip()" style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;border:1px solid var(--t3);color:var(--t3);font-size:11px;font-weight:700;cursor:help;margin-left:8px;vertical-align:middle">?</span>';}
-var FUNIL_DEF='<div style="font-weight:700;margin-bottom:6px">Como lemos o funil</div><div style="font-size:11px;line-height:1.8;text-align:left"><b style=color:#f87171>Nunca acessou</b>: comprou mas nunca fez login.<br><b style=color:#fb923c>Acessou mas não consumiu</b>: logou mas está com 0% de progresso.<br><b style=color:#fbbf24>Consumiu pouco</b>: progresso abaixo de 10% e +30 dias sem acessar.<br><b style=color:#f472b6>Desengajado</b>: progresso de 10% a 40% e +30 dias sem acessar.<br><b style=color:#2dd4bf>Engajado</b>: acessou nos últimos 30 dias (progresso até 40%).<br><b style=color:#34d399>Recompra</b>: progresso de 40% ou mais (perfil que costuma renovar).</div>';
 function inatHbar(a){var it=[['0-14 dias',(a.faixaDias['0-14d']||0),'var(--green)'],['15-30 dias',(a.faixaDias['15-30d']||0),'var(--gold)'],['31-60 dias',(a.faixaDias['31-60d']||0),'var(--orange)'],['>60 dias',(a.faixaDias['>60d']||0),'var(--red)'],['Nunca acessou',(a.nuncaAcessou||0),'var(--pink)']];var t=it.reduce(function(s,x){return s+x[1];},0);var mx=Math.max.apply(null,it.map(function(x){return x[1];}).concat([1]));var h='';it.forEach(function(x){var w=Math.max(Math.round(x[1]/mx*100),3);var p=t?rd(x[1]/t*100):0;h+='<div class="hbar-row"><span class="hbar-lbl">'+x[0]+'</span><div class="hbar-track"><div class="hbar-fill" style="width:'+w+'%;background:'+x[2]+';overflow:visible">'+fN(x[1])+'</div></div><span style="font-family:JetBrains Mono;font-weight:700;font-size:14px;color:var(--t3);min-width:56px;text-align:right">'+fmtP(p)+'</span></div>';});return h;}
-const funilOrder=['Nunca acessou','Acessou mas não consumiu','Consumiu pouco','Desengajado','Engajado','Recompra'];
-const funilColors=['var(--pink)','var(--orange)','var(--gold)','var(--red)','var(--teal)','var(--green)'];
-const funilBg=['rgba(244,114,182,.12)','rgba(251,146,60,.12)','rgba(251,191,36,.12)','rgba(248,113,113,.12)','rgba(45,212,191,.12)','rgba(52,211,153,.12)'];
+// ==== Funil dinâmico ====
+// Ordem canônica das etapas, mas o dash só mostra as que EXISTEM na coluna AE "Funil Calculado" da planilha.
+// Tirou/criou etapa na fórmula → some/aparece aqui sozinha, sem mexer no código (etapa nova entra no fim, com cor reserva).
+const FUNIL_CANON=['Nunca acessou','Acessou mas não consumiu','Consumiu pouco','Desengajado','Engajado','Recompra','Verificar'];
+const FUNIL_STYLE={'Nunca acessou':['var(--pink)','rgba(244,114,182,.12)','#f472b6'],'Acessou mas não consumiu':['var(--orange)','rgba(251,146,60,.12)','#fb923c'],'Consumiu pouco':['var(--gold)','rgba(251,191,36,.12)','#fbbf24'],'Desengajado':['var(--red)','rgba(248,113,113,.12)','#f87171'],'Engajado':['var(--teal)','rgba(45,212,191,.12)','#2dd4bf'],'Recompra':['var(--green)','rgba(52,211,153,.12)','#34d399'],'Verificar':['var(--t3)','rgba(255,255,255,.06)','#94a3b8']};
+const FUNIL_EXTRA=[['#38bdf8','rgba(56,189,248,.12)','#38bdf8'],['#a78bfa','rgba(167,139,250,.12)','#a78bfa'],['#22d3ee','rgba(34,211,238,.12)','#22d3ee']];
+function funilStyle(f,ord){if(FUNIL_STYLE[f])return FUNIL_STYLE[f];const ex=(ord||[]).filter(x=>!FUNIL_STYLE[x]);return FUNIL_EXTRA[Math.max(0,ex.indexOf(f))%FUNIL_EXTRA.length];}
+let funilOrder=FUNIL_CANON.slice(),funilColors=funilOrder.map(f=>FUNIL_STYLE[f][0]),funilBg=funilOrder.map(f=>FUNIL_STYLE[f][1]);
+const FUNIL_DESC={'Nunca acessou':'comprou mas nunca fez login.','Acessou mas não consumiu':'logou mas está com 0% de progresso.','Consumiu pouco':'progresso abaixo de 10% e +30 dias sem acessar.','Desengajado':function(ord){return ord.includes('Consumiu pouco')?'progresso de 10% a 40% e +30 dias sem acessar.':'progresso abaixo de 40% e +30 dias sem acessar.';},'Engajado':'acessou nos últimos 30 dias (progresso até 40%).','Recompra':'progresso de 40% ou mais (perfil que costuma renovar).','Verificar':'progresso ausente / a checar.'};
+function buildFunilDef(ord){var d;return '<div style="font-weight:700;margin-bottom:6px">Como lemos o funil</div><div style="font-size:11px;line-height:1.8;text-align:left">'+ord.map(f=>{d=FUNIL_DESC[f];d=typeof d==='function'?d(ord):d;return '<b style="color:'+funilStyle(f,ord)[2]+'">'+f+'</b>: '+(d||'etapa criada na planilha (sem descrição cadastrada).');}).join('<br>')+'</div>';}
+var FUNIL_DEF=buildFunilDef(funilOrder);
+function setFunilDinamico(presentes){const set=new Set(Array.from(presentes||[]).map(x=>String(x==null?'':x).trim()).filter(Boolean));if(!set.size)return;const extras=[...set].filter(f=>!FUNIL_CANON.includes(f)).sort();funilOrder=FUNIL_CANON.filter(f=>set.has(f)).concat(extras);funilColors=funilOrder.map(f=>funilStyle(f,funilOrder)[0]);funilBg=funilOrder.map(f=>funilStyle(f,funilOrder)[1]);FUNIL_DEF=buildFunilDef(funilOrder);}
 const progOrder=['0','1-10','11-20','21-30','31-40','41-50','51-60','61-70','71-80','81-90','91-100'];
 const progColors=['var(--red)','var(--pink)','var(--orange)','var(--gold)','var(--sky)','var(--cyan)','var(--teal)','var(--green)','var(--accent)','var(--a2)','var(--sky)'];
 const tipoColors={'BUYER':'var(--green)','IMPORTED':'var(--accent)','GUEST':'var(--gold)','FREE':'var(--sky)'};
@@ -449,6 +457,7 @@ async function loadData(){
     buildMS('fStatusCompra',[...sets.statusCompra].sort());
     buildMS('fTipoAluno',[...sets.tipoAluno].sort());
     buildMS('fStatusClub',[...sets.statusClub].sort());
+    setFunilDinamico(sets.funilCalc);
     buildMS('fFunil',funilOrder.filter(f=>sets.funilCalc.has(f)));
     computeCrossCache();
     RENDERED_TABS={geral:false,engajamento:false,financeiro:false,nps:false};
@@ -1420,8 +1429,8 @@ function renderAtendimento(){
     h+='<div class="sec">🎯 Disparos por Funil — '+p.label+'</div>';
     h+='<div class="card"><h3>Para qual estágio do funil os disparos foram</h3><div class="d">Disparos (chatwoot) cruzados com o funil de cada aluna · '+fN(F.total)+' com e-mail identificado · <strong style="color:var(--green)">'+taxaGeral.toFixed(1)+'%</strong> dos disparos tiveram resposta da aluna no período'+notaCustom+'</div>';
     h+='<div style="font-size:11px;color:var(--t3);margin:-4px 0 12px;line-height:1.5">ℹ️ Métrica do <strong>disparo</strong> (quem recebeu E respondeu no período). Difere da "Taxa de resposta" do topo, que conta toda conversa ativa no período sobre os disparos — por isso é maior.</div>';
-    const funilOrdem=['Nunca acessou','Acessou mas não consumiu','Consumiu pouco','Desengajado','Engajado','Recompra'];
-    const fcores={'Nunca acessou':'#64748b','Acessou mas não consumiu':'#fb923c','Consumiu pouco':'#fbbf24','Desengajado':'#f87171','Engajado':'#34d399','Recompra':'#22d3ee'};
+    const funilOrdem=funilOrder;
+    const fcores={'Nunca acessou':'#64748b','Acessou mas não consumiu':'#fb923c','Consumiu pouco':'#fbbf24','Desengajado':'#f87171','Engajado':'#34d399','Recompra':'#22d3ee','Verificar':'#94a3b8'};
     const ents=Object.keys(F.por_funil||{}).map(k=>({k:k,d:(F.por_funil[k].d||0),r:(F.por_funil[k].r||0)})).sort((a,b)=>{
       const ia=funilOrdem.indexOf(a.k), ib=funilOrdem.indexOf(b.k); return (ia<0?99:ia)-(ib<0?99:ib);
     });
